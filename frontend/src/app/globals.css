@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+:root {
+  --background: #07090e;
+  --foreground: #f1f5f9;
+  --card-bg: rgba(15, 23, 42, 0.75);
+  --card-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #07090e;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-glow {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.08);
+}
+
+/* Markdown typography inside reports */
+.markdown-body h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.markdown-body h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.4rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body p {
+  line-height: 1.75;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.markdown-body li {
+  margin-bottom: 0.35rem;
+}
+
+.markdown-body blockquote {
+  border-left: 4px solid #38bdf8;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #94a3b8;
+  margin: 1.25rem 0;
+}
+
+.markdown-body code {
+  background: rgba(30, 41, 59, 0.8);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.88em;
+  color: #38bdf8;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.markdown-body a {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.markdown-body a:hover {
+  color: #7dd3fc;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
