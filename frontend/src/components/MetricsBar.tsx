@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Globe, FileCheck2, AlertTriangle, ShieldCheck, Cpu, Zap, Award } from "lucide-react";
 import { ResearchStatistics } from "@/lib/api";
 
 interface MetricsBarProps {
@@ -9,84 +8,103 @@ interface MetricsBarProps {
   modelName?: string;
 }
 
-export const MetricsBar: React.FC<MetricsBarProps> = ({ statistics, modelName = "Qwen / Ollama" }) => {
-  const getConfidenceColor = (score: number) => {
-    if (score >= 75) return "text-emerald-400 border-emerald-500/40 bg-emerald-950/40";
-    if (score >= 50) return "text-amber-400 border-amber-500/40 bg-amber-950/40";
-    return "text-rose-400 border-rose-500/40 bg-rose-950/40";
+export const MetricsBar: React.FC<MetricsBarProps> = ({ statistics }) => {
+  const confidenceScore = statistics.overall_confidence || 0;
+
+  const getConfidenceStyle = (score: number) => {
+    if (score >= 75) return { color: "#4edea3", border: "border-[#10b981]", label: "HIGH CORROBORATION" };
+    if (score >= 50) return { color: "#ffb77d", border: "border-[#d97706]", label: "MODERATE TENSION" };
+    return { color: "#ffb4ab", border: "border-[#dc2626]", label: "UNRESOLVED SCHISM" };
   };
 
+  const confInfo = getConfidenceStyle(confidenceScore);
+
   return (
-    <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 my-6">
-      {/* Sources Discovered */}
-      <div className="glass-panel p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
-          <span>Sources</span>
-          <Globe className="w-3.5 h-3.5 text-cyan-400" />
+    <div className="w-full border border-[#222735] bg-[#0b0e14]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-[#222735]">
+        {/* Cell 1: Sources Discovered */}
+        <div className="p-3 sm:p-4 bg-[#0e1117] flex flex-col justify-between">
+          <span className="text-[10px] font-mono text-[#a38c7c] uppercase tracking-wider block mb-1">
+            Sources Ingested
+          </span>
+          <div className="flex items-baseline justify-between">
+            <span className="font-mono text-2xl font-bold text-[#f1f5f9] tabular-nums">
+              {statistics.sources_discovered}
+            </span>
+            <span className="text-[10px] font-mono text-[#a38c7c]">Discovered</span>
+          </div>
         </div>
-        <div className="flex items-baseline space-x-1.5">
-          <span className="text-2xl font-black text-white">{statistics.sources_discovered}</span>
-          <span className="text-[11px] text-slate-500 font-mono">found</span>
-        </div>
-      </div>
 
-      {/* Relevant Sources */}
-      <div className="glass-panel p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
-          <span>Relevant</span>
-          <FileCheck2 className="w-3.5 h-3.5 text-sky-400" />
+        {/* Cell 2: Relevant Sources */}
+        <div className="p-3 sm:p-4 bg-[#0e1117] flex flex-col justify-between">
+          <span className="text-[10px] font-mono text-[#a38c7c] uppercase tracking-wider block mb-1">
+            Corpus Filtered
+          </span>
+          <div className="flex items-baseline justify-between">
+            <span className="font-mono text-2xl font-bold text-[#ffb77d] tabular-nums">
+              {statistics.sources_relevant}
+            </span>
+            <span className="text-[10px] font-mono text-[#a38c7c]">Relevant</span>
+          </div>
         </div>
-        <div className="flex items-baseline space-x-1.5">
-          <span className="text-2xl font-black text-sky-300">{statistics.sources_relevant}</span>
-          <span className="text-[11px] text-slate-500 font-mono">extracted</span>
-        </div>
-      </div>
 
-      {/* Claims Identified */}
-      <div className="glass-panel p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
-          <span>Claims</span>
-          <Zap className="w-3.5 h-3.5 text-purple-400" />
+        {/* Cell 3: Claims Extracted */}
+        <div className="p-3 sm:p-4 bg-[#0e1117] flex flex-col justify-between">
+          <span className="text-[10px] font-mono text-[#a38c7c] uppercase tracking-wider block mb-1">
+            Assertions Parsed
+          </span>
+          <div className="flex items-baseline justify-between">
+            <span className="font-mono text-2xl font-bold text-[#f1f5f9] tabular-nums">
+              {statistics.claims_identified}
+            </span>
+            <span className="text-[10px] font-mono text-[#a38c7c]">Claims</span>
+          </div>
         </div>
-        <div className="flex items-baseline space-x-1.5">
-          <span className="text-2xl font-black text-purple-300">{statistics.claims_identified}</span>
-          <span className="text-[11px] text-slate-500 font-mono">extracted</span>
-        </div>
-      </div>
 
-      {/* Verified Claims */}
-      <div className="glass-panel p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
-          <span>Verified</span>
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+        {/* Cell 4: Verified Statutory */}
+        <div className="p-3 sm:p-4 bg-[#0e1117] flex flex-col justify-between">
+          <span className="text-[10px] font-mono text-[#a38c7c] uppercase tracking-wider block mb-1">
+            Verified Statutory
+          </span>
+          <div className="flex items-baseline justify-between">
+            <span className="font-mono text-2xl font-bold text-[#4edea3] tabular-nums">
+              {statistics.claims_verified}
+            </span>
+            <span className="text-[10px] font-mono text-[#4edea3]">Audited</span>
+          </div>
         </div>
-        <div className="flex items-baseline space-x-1.5">
-          <span className="text-2xl font-black text-emerald-300">{statistics.claims_verified}</span>
-          <span className="text-[11px] text-slate-500 font-mono">cross-checked</span>
-        </div>
-      </div>
 
-      {/* Conflicts Detected */}
-      <div className="glass-panel p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-        <div className="flex items-center justify-between text-slate-400 text-xs mb-1">
-          <span>Conflicts</span>
-          <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+        {/* Cell 5: Conflicts Detected */}
+        <div className="p-3 sm:p-4 bg-[#0e1117] flex flex-col justify-between">
+          <span className="text-[10px] font-mono text-[#a38c7c] uppercase tracking-wider block mb-1">
+            Methodological Schisms
+          </span>
+          <div className="flex items-baseline justify-between">
+            <span
+              className={`font-mono text-2xl font-bold tabular-nums ${
+                statistics.conflicts_detected > 0 ? "text-[#ffb77d]" : "text-[#f1f5f9]"
+              }`}
+            >
+              {statistics.conflicts_detected}
+            </span>
+            <span className="text-[10px] font-mono text-[#ffb77d]">Contested</span>
+          </div>
         </div>
-        <div className="flex items-baseline space-x-1.5">
-          <span className="text-2xl font-black text-amber-400">{statistics.conflicts_detected}</span>
-          <span className="text-[11px] text-slate-500 font-mono">detected</span>
-        </div>
-      </div>
 
-      {/* Overall Confidence */}
-      <div className={`p-3.5 rounded-xl border flex flex-col justify-between ${getConfidenceColor(statistics.overall_confidence)}`}>
-        <div className="flex items-center justify-between text-xs mb-1">
-          <span className="font-semibold">Confidence</span>
-          <Award className="w-3.5 h-3.5" />
-        </div>
-        <div className="flex items-baseline space-x-1">
-          <span className="text-2xl font-black">{statistics.overall_confidence}%</span>
-          <span className="text-[10px] uppercase font-mono opacity-80">calculated</span>
+        {/* Cell 6: Mathematical Confidence */}
+        <div className="p-3 sm:p-4 bg-[#131720] flex flex-col justify-between border-l-2 border-[#d97706]">
+          <span className="text-[10px] font-mono text-[#a38c7c] uppercase tracking-wider block mb-1">
+            Epistemic Confidence
+          </span>
+          <div className="flex items-baseline justify-between">
+            <span
+              className="font-mono text-2xl font-bold tabular-nums"
+              style={{ color: confInfo.color }}
+            >
+              {confidenceScore}%
+            </span>
+            <span className="text-[9px] font-mono text-[#a38c7c] uppercase">{confInfo.label}</span>
+          </div>
         </div>
       </div>
     </div>

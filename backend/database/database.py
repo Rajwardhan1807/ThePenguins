@@ -130,6 +130,111 @@ def init_db():
     )
     """)
 
+    # ── Research Paper Studio tables ──────────────────────────────────────
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS papers (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        research_question TEXT,
+        objectives TEXT,
+        field TEXT,
+        paper_type TEXT NOT NULL DEFAULT 'General Academic Paper',
+        citation_style TEXT DEFAULT 'APA 7',
+        target_word_count INTEGER DEFAULT 5000,
+        research_depth TEXT DEFAULT 'deep',
+        language TEXT DEFAULT 'English',
+        target_audience TEXT,
+        abstract TEXT,
+        status TEXT NOT NULL DEFAULT 'draft',
+        current_stage TEXT DEFAULT 'config',
+        plan TEXT,
+        sections TEXT,
+        references_json TEXT,
+        originality_report TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS paper_sources (
+        id TEXT PRIMARY KEY,
+        paper_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        authors TEXT,
+        year TEXT,
+        journal TEXT,
+        doi TEXT,
+        url TEXT,
+        abstract TEXT,
+        snippet TEXT,
+        source_type TEXT DEFAULT 'Web',
+        reliability REAL DEFAULT 0.7,
+        relevance REAL DEFAULT 0.8,
+        verified INTEGER DEFAULT 0,
+        FOREIGN KEY (paper_id) REFERENCES papers(id)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS paper_sections (
+        id TEXT PRIMARY KEY,
+        paper_id TEXT NOT NULL,
+        section_key TEXT NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT,
+        word_count INTEGER DEFAULT 0,
+        order_index INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'pending',
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (paper_id) REFERENCES papers(id)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS paper_jobs (
+        id TEXT PRIMARY KEY,
+        paper_id TEXT NOT NULL,
+        job_type TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        stage TEXT,
+        progress INTEGER DEFAULT 0,
+        error TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (paper_id) REFERENCES papers(id)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS paper_originality (
+        id TEXT PRIMARY KEY,
+        paper_id TEXT NOT NULL,
+        passage TEXT NOT NULL,
+        matched_source TEXT,
+        matched_url TEXT,
+        similarity_note TEXT,
+        flag_reason TEXT,
+        suggestion TEXT,
+        needs_citation INTEGER DEFAULT 0,
+        section_key TEXT,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (paper_id) REFERENCES papers(id)
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS paper_revisions (
+        id TEXT PRIMARY KEY,
+        paper_id TEXT NOT NULL,
+        revision_label TEXT,
+        snapshot_json TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (paper_id) REFERENCES papers(id)
+    )
+    """)
+    # ── End paper tables ───────────────────────────────────────────────────
+
     conn.commit()
     conn.close()
 
@@ -344,3 +449,238 @@ def get_document(doc_id: str) -> Optional[Dict[str, Any]]:
 
 # Initialize on import
 init_db()
+
+# ── Research Paper Studio CRUD ─────────────────────────────────────────────
+
+def save_paper(paper: Dict[str, Any]):
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = datetime.utcnow().isoformat()
+    cursor.execute("""
+    INSERT OR REPLACE INTO papers
+    (id, title, research_question, objectives, field, paper_type, citation_style,
+     target_word_count, research_depth, language, target_audience, abstract,
+     status, current_stage, plan, sections, references_json, originality_report,
+     created_at, updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, (
+        paper["id"], paper.get("title", "Untitled"),
+        paper.get("research_question"), paper.get("objectives"),
+        paper.get("field"), paper.get("paper_type", "General Academic Paper"),
+        paper.get("citation_style", "APA 7"), paper.get("target_word_count", 5000),
+        paper.get("research_depth", "deep"), paper.get("language", "English"),
+        paper.get("target_audience"), paper.get("abstract"),
+        paper.get("status", "draft"), paper.get("current_stage", "config"),
+        json.dumps(paper.get("plan")) if paper.get("plan") else None,
+        json.dumps(paper.get("sections")) if paper.get("sections") else None,
+        json.dumps(paper.get("references_json")) if paper.get("references_json") else None,
+        json.dumps(paper.get("originality_report")) if paper.get("originality_report") else None,
+        paper.get("created_at", now), now
+    ))
+    conn.commit()
+    conn.close()
+
+def get_paper(paper_id: str) -> Optional[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM papers WHERE id = ?", (paper_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return None
+    d = dict(row)
+    for field in ["plan", "sections", "references_json", "originality_report"]:
+        if d.get(field):
+            try:
+                d[field] = json.loads(d[field])
+            except Exception:
+                pass
+    return d
+
+def list_papers(limit: int = 50) -> List[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM papers ORDER BY updated_at DESC LIMIT ?", (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+    results = []
+    for r in rows:
+        d = dict(r)
+        for field in ["plan", "sections", "references_json", "originality_report"]:
+            if d.get(field):
+                try:
+                    d[field] = json.loads(d[field])
+                except Exception:
+                    pass
+        results.append(d)
+    return results
+
+def delete_paper(paper_id: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    for tbl in ["paper_originality", "paper_jobs", "paper_sections", "paper_sources"]:
+        cursor.execute(f"DELETE FROM {tbl} WHERE paper_id = ?", (paper_id,))
+    cursor.execute("DELETE FROM papers WHERE id = ?", (paper_id,))
+    conn.commit()
+    conn.close()
+
+def save_paper_source(src: Dict[str, Any]):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT OR REPLACE INTO paper_sources
+    (id, paper_id, title, authors, year, journal, doi, url, abstract, snippet,
+     source_type, reliability, relevance, verified)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, (
+        src["id"], src["paper_id"], src.get("title", ""),
+        src.get("authors", ""), src.get("year", ""),
+        src.get("journal", ""), src.get("doi", ""),
+        src.get("url", ""), src.get("abstract", ""),
+        src.get("snippet", ""), src.get("source_type", "Web"),
+        src.get("reliability", 0.7), src.get("relevance", 0.8),
+        1 if src.get("verified") else 0
+    ))
+    conn.commit()
+    conn.close()
+
+def get_paper_sources(paper_id: str) -> List[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM paper_sources WHERE paper_id = ?", (paper_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def save_paper_section(sec: Dict[str, Any]):
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = datetime.utcnow().isoformat()
+    cursor.execute("""
+    INSERT OR REPLACE INTO paper_sections
+    (id, paper_id, section_key, title, content, word_count, order_index, status, updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?)
+    """, (
+        sec["id"], sec["paper_id"], sec["section_key"], sec.get("title", ""),
+        sec.get("content", ""), sec.get("word_count", 0),
+        sec.get("order_index", 0), sec.get("status", "pending"), now
+    ))
+    conn.commit()
+    conn.close()
+
+def get_paper_sections(paper_id: str) -> List[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM paper_sections WHERE paper_id = ? ORDER BY order_index ASC", (paper_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def save_paper_job(job: Dict[str, Any]):
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = datetime.utcnow().isoformat()
+    cursor.execute("""
+    INSERT OR REPLACE INTO paper_jobs
+    (id, paper_id, job_type, status, stage, progress, error, created_at, updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?)
+    """, (
+        job["id"], job["paper_id"], job.get("job_type", "generate"),
+        job.get("status", "pending"), job.get("stage", ""),
+        job.get("progress", 0), job.get("error"),
+        job.get("created_at", now), now
+    ))
+    conn.commit()
+    conn.close()
+
+def get_paper_job(job_id: str) -> Optional[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM paper_jobs WHERE id = ?", (job_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def get_latest_paper_job(paper_id: str) -> Optional[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM paper_jobs WHERE paper_id = ? ORDER BY created_at DESC LIMIT 1", (paper_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def save_originality_finding(finding: Dict[str, Any]):
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = datetime.utcnow().isoformat()
+    cursor.execute("""
+    INSERT OR REPLACE INTO paper_originality
+    (id, paper_id, passage, matched_source, matched_url, similarity_note,
+     flag_reason, suggestion, needs_citation, section_key, created_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?)
+    """, (
+        finding["id"], finding["paper_id"], finding.get("passage", ""),
+        finding.get("matched_source", ""), finding.get("matched_url", ""),
+        finding.get("similarity_note", ""), finding.get("flag_reason", ""),
+        finding.get("suggestion", ""),
+        1 if finding.get("needs_citation") else 0,
+        finding.get("section_key", ""), now
+    ))
+    conn.commit()
+    conn.close()
+
+def get_originality_findings(paper_id: str) -> List[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM paper_originality WHERE paper_id = ? ORDER BY created_at ASC", (paper_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def clear_originality_findings(paper_id: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM paper_originality WHERE paper_id = ?", (paper_id,))
+    conn.commit()
+    conn.close()
+
+def save_paper_revision(rev: Dict[str, Any]):
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = datetime.utcnow().isoformat()
+    cursor.execute("""
+    INSERT INTO paper_revisions (id, paper_id, revision_label, snapshot_json, created_at)
+    VALUES (?, ?, ?, ?, ?)
+    """, (
+        rev.get("id") or f"rev_{uuid.uuid4().hex[:8]}",
+        rev["paper_id"],
+        rev.get("revision_label", "Manual Save"),
+        json.dumps(rev.get("snapshot", {})),
+        rev.get("created_at", now)
+    ))
+    conn.commit()
+    conn.close()
+
+def get_paper_revisions(paper_id: str) -> List[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, paper_id, revision_label, created_at FROM paper_revisions WHERE paper_id = ? ORDER BY created_at DESC", (paper_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_paper_revision(revision_id: str) -> Optional[Dict[str, Any]]:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM paper_revisions WHERE id = ?", (revision_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return None
+    d = dict(row)
+    if d.get("snapshot_json"):
+        try:
+            d["snapshot"] = json.loads(d["snapshot_json"])
+        except Exception:
+            pass
+    return d

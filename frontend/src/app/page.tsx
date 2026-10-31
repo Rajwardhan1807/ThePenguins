@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Header } from "@/components/Header";
+import { ArchivalSidebar, DocketTab } from "@/components/ArchivalSidebar";
 import { HeroSection } from "@/components/HeroSection";
 import { AgentTimeline } from "@/components/AgentTimeline";
 import { MetricsBar } from "@/components/MetricsBar";
@@ -10,6 +11,8 @@ import { ClaimConflictExplorer } from "@/components/ClaimConflictExplorer";
 import { SourceExplorer } from "@/components/SourceExplorer";
 import { DocumentModal } from "@/components/DocumentModal";
 import { HistoryDrawer } from "@/components/HistoryDrawer";
+import { SystemStatusModal } from "@/components/SystemStatusModal";
+import { PaperStudio } from "@/components/paper/PaperStudio";
 import {
   api,
   ResearchSession,
@@ -17,10 +20,17 @@ import {
   Claim,
   Report,
   TimelineEvent,
-  AgentStates,
-  ResearchStatistics,
 } from "@/lib/api";
-import { FileText, ShieldAlert, Sparkles, PlusCircle, ArrowLeft } from "lucide-react";
+import {
+  FileText,
+  ShieldAlert,
+  FolderOpen,
+  ArrowLeft,
+  Plus,
+  Loader2,
+  GitCompare,
+  FileCheck2
+} from "lucide-react";
 
 export default function Home() {
   const [health, setHealth] = useState<any>(null);
@@ -30,11 +40,16 @@ export default function Home() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [report, setReport] = useState<Report | null>(null);
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
-  const [activeTab, setActiveTab] = useState<"report" | "claims" | "sources">("report");
+
+  // Navigation state
+  const [activeDocketTab, setActiveDocketTab] = useState<DocketTab>("briefing");
+  const [activeSubTab, setActiveSubTab] = useState<"report" | "claims" | "sources">("report");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
+  const [isSystemModalOpen, setIsSystemModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -171,7 +186,8 @@ export default function Home() {
     setClaims([]);
     setReport(null);
     setTimelineEvents([]);
-    setActiveTab("report");
+    setActiveDocketTab("briefing");
+    setActiveSubTab("report");
 
     try {
       const res = await api.startResearch(query, mode, documentIds);
@@ -219,6 +235,7 @@ export default function Home() {
 
   const handleSelectHistorySession = (id: string) => {
     setActiveSessionId(id);
+    setActiveDocketTab("briefing");
     loadFullSession(id);
   };
 
@@ -233,159 +250,229 @@ export default function Home() {
     setReport(null);
     setTimelineEvents([]);
     setIsLoading(false);
+    setActiveDocketTab("briefing");
+  };
+
+  const handleDocketSelect = (tab: DocketTab) => {
+    if (tab === "documents") {
+      setIsDocumentModalOpen(true);
+      return;
+    }
+    if (tab === "history") {
+      setIsHistoryOpen(true);
+      return;
+    }
+    if (tab === "system") {
+      setIsSystemModalOpen(true);
+      return;
+    }
+    setActiveDocketTab(tab);
   };
 
   const isResearchActive = Boolean(session && activeSessionId);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090e] text-slate-100 selection:bg-cyan-500 selection:text-slate-950">
-      {/* Background Ambient Glows */}
-      <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-10 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#08090b] text-[#e1e2eb] font-sans antialiased flex flex-col">
+      {/* Archival Sidebar */}
+      <ArchivalSidebar
+        activeTab={activeDocketTab}
+        onSelectTab={handleDocketSelect}
+        backendHealth={health}
+        onNewResearch={handleResetToHome}
+        isOpenMobile={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
+        sourcesCount={sources.length}
+        claimsCount={claims.length}
+        hasReport={Boolean(report)}
+      />
 
-      {/* Global Header */}
+      {/* Top Header Bar */}
       <Header
         onOpenHistory={() => setIsHistoryOpen(true)}
         onOpenDocuments={() => setIsDocumentModalOpen(true)}
+        onNewResearch={handleResetToHome}
+        onOpenPaperStudio={() => setActiveDocketTab("paper_studio")}
+        onToggleMobileMenu={() => setIsMobileMenuOpen(true)}
+        activeSessionId={activeSessionId}
+        mode={session?.mode}
         backendHealth={health}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        {!isResearchActive ? (
-          /* Home Screen */
-          <HeroSection onStartResearch={handleStartResearch} isLoading={isLoading} />
+      {/* Main Editorial Canvas */}
+      <main className="md:pl-72 pt-12 min-h-screen flex-1 flex flex-col bg-[#08090b]">
+        {activeDocketTab === "paper_studio" ? (
+          <PaperStudio onBackToArchival={() => setActiveDocketTab("briefing")} />
         ) : (
-          /* Active Research Dashboard */
-          <div className="py-6 space-y-6 animate-fade-in">
-            {/* Top Navigation & Query Banner */}
-            <div className="glass-panel p-5 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-start space-x-3">
-                <button
-                  onClick={handleResetToHome}
-                  className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition shrink-0 mt-0.5"
-                  title="Back to Home / New Research"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/40">
-                      {session?.mode} mode
-                    </span>
-                    <span className="text-xs text-slate-400 font-mono">
-                      ID: {session?.id}
-                    </span>
-                  </div>
-                  <h2 className="text-lg sm:text-xl font-bold text-white mt-1">
-                    {session?.query}
-                  </h2>
-                </div>
-              </div>
-
-              <button
-                onClick={handleResetToHome}
-                className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition text-xs font-semibold shrink-0"
-              >
-                <PlusCircle className="w-4 h-4 text-cyan-400" />
-                <span>New Research</span>
-              </button>
-            </div>
-
-            {/* Agent Pipeline Visual Progression */}
-            {session && (
-              <AgentTimeline
-                agents={session.agents}
-                events={timelineEvents}
-                currentStep={session.current_step}
-              />
-            )}
-
-            {/* Real-time Statistics Bar */}
-            {session && (
-              <MetricsBar
-                statistics={session.statistics}
-                modelName={health?.ollama?.model}
-              />
-            )}
-
-            {/* Tabs for Intelligence Workspace */}
-            <div className="border-b border-white/10 flex items-center space-x-4 text-sm font-medium">
-              <button
-                onClick={() => setActiveTab("report")}
-                className={`pb-3 border-b-2 transition flex items-center space-x-2 ${
-                  activeTab === "report"
-                    ? "border-cyan-400 text-cyan-300 font-bold"
-                    : "border-transparent text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <FileText className="w-4 h-4" />
-                <span>Research Report</span>
-                {report && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                )}
-              </button>
-
-              <button
-                onClick={() => setActiveTab("claims")}
-                className={`pb-3 border-b-2 transition flex items-center space-x-2 ${
-                  activeTab === "claims"
-                    ? "border-cyan-400 text-cyan-300 font-bold"
-                    : "border-transparent text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <ShieldAlert className="w-4 h-4" />
-                <span>Claims & Conflicts</span>
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
-                  {claims.length}
-                </span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("sources")}
-                className={`pb-3 border-b-2 transition flex items-center space-x-2 ${
-                  activeTab === "sources"
-                    ? "border-cyan-400 text-cyan-300 font-bold"
-                    : "border-transparent text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Source Explorer</span>
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
-                  {sources.length}
-                </span>
-              </button>
-            </div>
-
-            {/* Tab Panels */}
-            {activeTab === "report" && (
-              <div>
-                {report ? (
-                  <ReportView report={report} query={session?.query || ""} />
-                ) : (
-                  <div className="p-12 text-center glass-panel rounded-2xl border border-white/10 space-y-3">
-                    <div className="w-12 h-12 rounded-full bg-cyan-950/60 border border-cyan-800/40 flex items-center justify-center mx-auto text-cyan-400 animate-pulse">
-                      <FileText className="w-6 h-6" />
+          <div className="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+            {/* VIEW 1: Current Briefing */}
+            {activeDocketTab === "briefing" && (
+            <>
+              {!isResearchActive ? (
+                /* Research Home Screen */
+                <HeroSection onStartResearch={handleStartResearch} isLoading={isLoading} />
+              ) : (
+                /* Active Research Docket */
+                <div className="space-y-6">
+                  {/* Top Dossier Title & Navigation Banner */}
+                  <div className="p-4 sm:p-5 bg-[#0b0e14] border border-[#222735] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <button
+                        onClick={handleResetToHome}
+                        className="p-1.5 border border-[#222735] bg-[#101319] hover:border-[#a38c7c] text-[#a38c7c] hover:text-[#f1f5f9] transition-none cursor-pointer mt-0.5 shrink-0"
+                        title="Back to Home / Formulate New Query"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+                      <div>
+                        <div className="flex items-center gap-2 font-mono text-[11px]">
+                          <span className="text-[#ffb77d] uppercase px-1.5 py-0.2 border border-[#d97706]/40 bg-[#d97706]/10 font-bold">
+                            {session?.mode} mode
+                          </span>
+                          <span className="text-[#a38c7c]">
+                            REF-{session?.id.slice(0, 8).toUpperCase()}
+                          </span>
+                        </div>
+                        <h1 className="font-serif text-xl sm:text-2xl text-[#f1f5f9] mt-1 tracking-tight font-medium">
+                          {session?.query}
+                        </h1>
+                      </div>
                     </div>
-                    <h3 className="text-base font-bold text-white">Synthesizing Research Report</h3>
-                    <p className="text-xs text-slate-400 max-w-md mx-auto">
-                      Writer Agent is compiling verified evidence snippets, claims, and cross-source citations.
-                      The cited report will appear here upon completion.
-                    </p>
+
+                    <button
+                      onClick={handleResetToHome}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#191c22] border border-[#222735] hover:border-[#a38c7c] text-[#f1f5f9] transition-none font-mono text-xs uppercase cursor-pointer shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#ffb77d]" />
+                      <span>New Query</span>
+                    </button>
                   </div>
-                )}
-              </div>
-            )}
 
-            {activeTab === "claims" && (
-              <ClaimConflictExplorer claims={claims} />
-            )}
+                  {/* Agent Pipeline Sequential Topology */}
+                  {session && (
+                    <AgentTimeline
+                      agents={session.agents}
+                      events={timelineEvents}
+                      currentStep={session.current_step}
+                    />
+                  )}
 
-            {activeTab === "sources" && (
-              <SourceExplorer sources={sources} />
-            )}
-          </div>
-        )}
+                  {/* High-Density Telemetry Strip */}
+                  {session && (
+                    <MetricsBar
+                      statistics={session.statistics}
+                      modelName={health?.ollama?.model}
+                    />
+                  )}
+
+                  {/* Operational Sub-Tabs */}
+                  <div className="border-b border-[#222735] flex items-center gap-4 text-xs font-mono">
+                    <button
+                      onClick={() => setActiveSubTab("report")}
+                      className={`pb-2.5 border-b-2 uppercase tracking-wider flex items-center gap-1.5 transition-none cursor-pointer ${
+                        activeSubTab === "report"
+                          ? "border-[#ffb77d] text-[#ffb77d] font-bold"
+                          : "border-transparent text-[#a38c7c] hover:text-[#f1f5f9]"
+                      }`}
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Epistemic Ledger</span>
+                      {report && <span className="text-[#4edea3] font-bold">●</span>}
+                    </button>
+
+                    <button
+                      onClick={() => setActiveSubTab("claims")}
+                      className={`pb-2.5 border-b-2 uppercase tracking-wider flex items-center gap-1.5 transition-none cursor-pointer ${
+                        activeSubTab === "claims"
+                          ? "border-[#ffb77d] text-[#ffb77d] font-bold"
+                          : "border-transparent text-[#a38c7c] hover:text-[#f1f5f9]"
+                      }`}
+                    >
+                      <GitCompare className="w-3.5 h-3.5" />
+                      <span>Contradiction Matrix ({claims.length})</span>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveSubTab("sources")}
+                      className={`pb-2.5 border-b-2 uppercase tracking-wider flex items-center gap-1.5 transition-none cursor-pointer ${
+                        activeSubTab === "sources"
+                          ? "border-[#ffb77d] text-[#ffb77d] font-bold"
+                          : "border-transparent text-[#a38c7c] hover:text-[#f1f5f9]"
+                      }`}
+                    >
+                      <FolderOpen className="w-3.5 h-3.5" />
+                      <span>Primary Sources ({sources.length})</span>
+                    </button>
+                  </div>
+
+                  {/* Active Sub-Tab View */}
+                  {activeSubTab === "report" && (
+                    <div>
+                      {report ? (
+                        <ReportView report={report} query={session?.query || ""} />
+                      ) : (
+                        <div className="p-10 border border-[#222735] bg-[#0e1117] text-center space-y-3 font-mono">
+                          <Loader2 className="w-6 h-6 text-[#ffb77d] animate-spin mx-auto" />
+                          <h3 className="text-sm font-bold text-[#f1f5f9] uppercase tracking-wider">
+                            Writer Agent Synthesizing Epistemic Ledger...
+                          </h3>
+                          <p className="text-xs text-[#a38c7c] max-w-md mx-auto">
+                            Corroborating citations, formatting key empirical assertions, and calculating
+                            mathematical confidence scores.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {activeSubTab === "claims" && (
+                    <ClaimConflictExplorer claims={claims} />
+                  )}
+
+                  {activeSubTab === "sources" && (
+                    <SourceExplorer sources={sources} />
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* VIEW 2: Primary Source Registry */}
+          {activeDocketTab === "sources" && (
+            <SourceExplorer sources={sources} />
+          )}
+
+          {/* VIEW 3: Contradiction Matrix */}
+          {activeDocketTab === "contradictions" && (
+            <ClaimConflictExplorer claims={claims} />
+          )}
+
+          {/* VIEW 4: Epistemic Ledger (Report) */}
+          {activeDocketTab === "report" && (
+            <div>
+              {report ? (
+                <ReportView report={report} query={session?.query || ""} />
+              ) : (
+                <div className="p-12 border border-[#222735] bg-[#0e1117] text-center space-y-3 font-mono">
+                  <FileCheck2 className="w-8 h-8 text-[#a38c7c] mx-auto" />
+                  <h3 className="text-sm font-bold text-[#f1f5f9] uppercase tracking-wider">
+                    No Epistemic Ledger Compiled Yet
+                  </h3>
+                  <p className="text-xs text-[#a38c7c] max-w-md mx-auto">
+                    Initiate a research docket from the home terminal or select an archived session to review
+                    the synthesized report.
+                  </p>
+                  <button
+                    onClick={() => setActiveDocketTab("briefing")}
+                    className="mt-2 px-4 py-2 bg-[#d97706] hover:bg-[#ffb77d] text-[#08090b] font-bold text-xs uppercase tracking-wider transition-none cursor-pointer"
+                  >
+                    Open Research Briefing
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       </main>
 
       {/* Modals & Drawers */}
@@ -399,6 +486,12 @@ export default function Home() {
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
         onSelectSession={handleSelectHistorySession}
+      />
+
+      <SystemStatusModal
+        isOpen={isSystemModalOpen}
+        onClose={() => setIsSystemModalOpen(false)}
+        backendHealth={health}
       />
     </div>
   );

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ResearchForge — Corpus Ingestion &amp; Evidentiary Parsing</title>
+<!-- Google Fonts: Newsreader & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#dbc2b0",
+            "tertiary-fixed": "#d4e4fa",
+            "on-tertiary-container": "#1c2b3c",
+            "on-background": "#e1e2eb",
+            "secondary-container": "#00a572",
+            "on-secondary": "#003824",
+            "surface-variant": "#32353c",
+            "inverse-surface": "#e1e2eb",
+            "secondary-fixed": "#6ffbbe",
+            "on-surface": "#e1e2eb",
+            "surface-container": "#1d2026",
+            "on-tertiary-fixed-variant": "#39485a",
+            "surface-container-low": "#191c22",
+            "primary": "#ffb77d",
+            "on-secondary-fixed": "#002113",
+            "tertiary": "#b9c8de",
+            "on-secondary-container": "#00311f",
+            "inverse-primary": "#904d00",
+            "tertiary-fixed-dim": "#b9c8de",
+            "on-primary": "#4d2600",
+            "inverse-on-surface": "#2e3037",
+            "on-error": "#690005",
+            "on-secondary-fixed-variant": "#005236",
+            "surface-container-lowest": "#0b0e14",
+            "background": "#101319",
+            "on-error-container": "#ffdad6",
+            "surface-tint": "#ffb77d",
+            "outline-variant": "#554336",
+            "surface-dim": "#101319",
+            "surface-container-highest": "#32353c",
+            "secondary": "#4edea3",
+            "on-primary-container": "#432100",
+            "error": "#ffb4ab",
+            "secondary-fixed-dim": "#4edea3",
+            "on-tertiary": "#233143",
+            "surface-bright": "#363940",
+            "primary-fixed": "#ffdcc3",
+            "error-container": "#93000a",
+            "on-primary-fixed": "#2f1500",
+            "outline": "#a38c7c",
+            "tertiary-container": "#8392a6",
+            "primary-container": "#d97707",
+            "on-tertiary-fixed": "#0d1c2d",
+            "surface": "#101319",
+            "surface-container-high": "#272a31",
+            "primary-fixed-dim": "#ffb77d",
+            "on-primary-fixed-variant": "#6e3900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0px",
+            "none": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "0px"
+          },
+          "spacing": {
+            "gutter": "0px",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "margin": "1.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Newsreader", "serif"],
+            "code-tabular": ["Inter", "monospace"],
+            "headline-md": ["Newsreader", "serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "headline-xl-mobile": ["Newsreader", "serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "body-lg": ["Newsreader", "serif"],
+            "headline-xl": ["Newsreader", "serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Newsreader", "serif"]
+          },
+          "fontSize": {
+            "headline-sm": ["1.25rem", { "lineHeight": "1.625rem", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "code-tabular": ["0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "headline-md": ["1.75rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.015em", "fontWeight": "500" }],
+            "label-md": ["0.8125rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-xl-mobile": ["2.25rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.08em", "fontWeight": "600" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-xl": ["3.5rem", { "lineHeight": "3.75rem", "letterSpacing": "-0.03em", "fontWeight": "400" }],
+            "headline-lg": ["2.5rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.025em", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.015em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Reset sharp borders and ensure crisp hairline rendered aesthetics */
+    * {
+      border-radius: 0px !important;
+      box-shadow: none !important;
+    }
+    body {
+      background-color: #0b0e14;
+      color: #e1e2eb;
+      font-feature-settings: "tnum" 1, "zero" 1;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hairline-border {
+      border-color: #222735;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0b0e14;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #222735;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: SideNavBar (archival_docket)                            -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-72 bg-surface-container-lowest border-r hairline-border z-40 flex flex-col justify-between p-4 select-none">
+<!-- Header / Brand Seal -->
+<div>
+<div class="flex items-center gap-3 pb-4 mb-4 border-b hairline-border">
+<div class="w-8 h-8 bg-surface-container-high flex items-center justify-center border hairline-border text-primary">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md italic text-primary tracking-tight">ResearchForge</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Autonomous Evidentiary Terminal</div>
+</div>
+</div>
+<!-- Tab Navigation Cluster -->
+<!-- Active tab mapped precisely to 'Primary Source Registry' based on page intent -->
+<nav class="space-y-1">
+<!-- 1. Current Briefing -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">article</span>
+<span>Current Briefing</span>
+</a>
+<!-- 2. Primary Source Registry (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-surface-container text-primary border-l-2 border-primary font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">folder_open</span>
+<span>Primary Source Registry</span>
+</a>
+<!-- 3. Contradiction Matrix -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+<span>Contradiction Matrix</span>
+</a>
+<!-- 4. Adversarial Scrape Trees -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+<span>Adversarial Scrape Trees</span>
+</a>
+<!-- 5. Epistemic Ledger -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">fact_check</span>
+<span>Epistemic Ledger</span>
+</a>
+<!-- 6. Corpus Discrepancies -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span>Corpus Discrepancies</span>
+</a>
+<!-- 7. System Parameters -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>System Parameters</span>
+</a>
+</nav>
+<!-- Operational Audit CTA -->
+<div class="mt-6 pt-4 border-t hairline-border">
+<button class="w-full py-2 px-3 bg-surface border hairline-border hover:border-primary text-on-surface hover:text-primary font-label-sm text-label-sm uppercase tracking-wider flex items-center justify-between group transition-none">
+<span>Execute Epistemic Audit</span>
+<span class="material-symbols-outlined text-[16px] text-primary group-hover:translate-x-0.5 transition-none">bolt</span>
+</button>
+</div>
+</div>
+<!-- Persistent Diagnostic Footer -->
+<div class="pt-4 border-t hairline-border space-y-2 font-code-tabular text-code-tabular text-on-surface-variant">
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">memory</span>
+<span>Model Weights: Isolated</span>
+</div>
+<span class="w-1.5 h-1.5 bg-secondary"></span>
+</div>
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">security</span>
+<span>Network: 0 B Out</span>
+</div>
+<span class="w-1.5 h-1.5 bg-secondary"></span>
+</div>
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">event</span>
+<span>Cutoff: 2024-Q4</span>
+</div>
+<span class="text-label-sm text-tertiary-container">AIR-GAPPED</span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE                                                            -->
+<!-- ========================================================================= -->
+<div class="flex-1 ml-72 flex flex-col min-h-screen bg-background">
+<!-- ======================================================================= -->
+<!-- SHARED COMPONENT: TopNavBar (broadsheet_masthead)                      -->
+<!-- ======================================================================= -->
+<header class="flex justify-between items-center w-full px-6 py-2.5 bg-surface border-b hairline-border select-none z-30 sticky top-0">
+<!-- Left Anchor Dossier Metadata -->
+<div class="flex items-center space-x-6">
+<span class="font-headline-sm text-headline-sm italic text-on-surface">ResearchForge</span>
+<span class="h-4 w-px bg-[#222735]"></span>
+<span class="text-secondary font-code-tabular text-code-tabular tracking-wider uppercase">Dossier: REF-09482-ARCH</span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular">Mode: Statutory Corroboration</span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular hidden xl:inline">Tolerance: 0.002δ</span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular hidden xl:inline">Latency: 14ms</span>
+</div>
+<!-- Right Trailing Actions -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 text-on-surface-variant border-r hairline-border pr-4 mr-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">lock</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">sync</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">terminal</span>
+</div>
+<button class="px-3 py-1.5 bg-surface border hairline-border hover:bg-surface-container-low text-on-surface font-code-tabular text-code-tabular">
+          Export Ledger
+        </button>
+<button class="px-3 py-1.5 bg-primary-container text-on-primary font-code-tabular text-code-tabular font-medium hover:bg-primary">
+          Re-Index Corpus
+        </button>
+</div>
+</header>
+<!-- Content Workspace -->
+<main class="flex-1 p-6 space-y-6 overflow-y-auto">
+<!-- Masthead Dossier Section Title -->
+<div class="flex flex-col md:flex-row md:items-end justify-between border-b hairline-border pb-4 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 border border-primary text-primary bg-primary/5 font-label-sm text-label-sm uppercase tracking-widest">SUB-PARTITION: SEC-LOCAL-84</span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular">CLASSIFICATION: ARCHIVAL EVIDENCE / STRICT NON-CIRCULATION</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Corpus Ingestion &amp; Evidentiary Parsing</h1>
+</div>
+<div class="flex items-center gap-4 text-right">
+<div class="font-code-tabular text-code-tabular text-on-surface-variant">
+<div>LOCAL DB: <span class="text-on-surface font-semibold">LANCEDB_PARQUET_V4</span></div>
+<div>VERIFICATION ENGINE: <span class="text-secondary font-semibold">DETERMINISTIC_SHA256</span></div>
+</div>
+<div class="border border-secondary text-secondary px-3 py-1.5 text-center font-code-tabular text-label-sm uppercase">
+            PARSER DAEMON ONLINE
+          </div>
+</div>
+</div>
+<!-- TOP SECTION: Austere Archival Dropzone -->
+<section class="border hairline-border bg-surface-container-lowest p-6 relative">
+<div class="absolute top-0 right-0 px-3 py-1 border-b border-l hairline-border font-code-tabular text-label-sm text-on-surface-variant bg-surface">
+          DROPZONE ARCHIVE TARGET // 0B OUTBOUND
+        </div>
+<div class="flex flex-col lg:flex-row items-center justify-between gap-6 py-4">
+<div class="space-y-2 max-w-2xl">
+<div class="flex items-center gap-2 text-primary font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">file_upload_off</span>
+<span>Statutory Ingestion Conduit</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">
+              Ingest Statutory Whitepapers, Legal Proceedings, and PDF Corpora
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Stored strictly in local isolated vector partition with SHA-256 fingerprinting. 0 bytes cloud transmission. Documents undergo page-level boundary splitting, text canonicalization, and forensic claim decomposition.
+            </p>
+</div>
+<div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto shrink-0">
+<label class="px-5 py-3 bg-surface border hairline-border hover:border-outline text-on-surface font-code-tabular text-code-tabular cursor-pointer flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-tertiary">folder</span>
+<span>Mount Directory Path</span>
+<input class="hidden" directory="" multiple="" type="file" webkitdirectory=""/>
+</label>
+<label class="px-5 py-3 bg-primary-container text-on-primary font-code-tabular text-code-tabular font-medium hover:bg-primary cursor-pointer flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+<span>Enqueue Dossier (.pdf, .xml)</span>
+<input accept=".pdf,.xml,.txt,.tar" class="hidden" multiple="" type="file"/>
+</label>
+</div>
+</div>
+<!-- Terminal Path Bar -->
+<div class="mt-4 pt-3 border-t hairline-border flex items-center justify-between font-code-tabular text-code-tabular text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold">&gt;</span>
+<span>MOUNT POINT:</span>
+<span class="text-on-surface">/opt/researchforge/dockets/isolated/inbound_parquets/</span>
+</div>
+<div class="flex items-center gap-3 text-label-sm">
+<span>FORMATS: PDF/A-1b, CERC_TARIFF_XML, LOK_SABHA_REPORTS</span>
+<span class="text-outline">|</span>
+<span class="text-secondary">INTEGRITY CHECK ACTIVE</span>
+</div>
+</div>
+</section>
+<!-- ACTIVE PARSING STREAM BLOCK -->
+<section class="border hairline-border bg-surface-container-low p-4">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between pb-3 mb-3 border-b hairline-border gap-2">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 bg-primary animate-pulse inline-block"></span>
+<span class="font-code-tabular text-code-tabular font-semibold text-on-surface">ACTIVE BATCH STREAM:</span>
+<span class="font-code-tabular text-code-tabular text-primary">CAG_Audit_Nuclear_Tariffs_2023.pdf</span>
+<span class="text-label-sm px-1.5 py-0.2 border border-outline-variant text-on-surface-variant">DAEMON PID 41902</span>
+</div>
+<div class="font-code-tabular text-code-tabular text-on-surface-variant">
+<span>START TIMESTAMP: 2024-10-18T14:22:09Z</span>
+</div>
+</div>
+<!-- Typography-driven metric ledger -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+<div class="border-l-2 border-primary pl-3">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Parsing Progress</div>
+<div class="font-code-tabular text-headline-sm text-on-surface mt-1">Page 84 of 142</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">59.1% Total Rasterization</div>
+</div>
+<div class="border-l-2 border-outline-variant pl-3">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Decomposition</div>
+<div class="font-code-tabular text-headline-sm text-primary mt-1">48 claims extracted</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">0.57 claims / page density</div>
+</div>
+<div class="border-l-2 border-outline-variant pl-3">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Vector Sharding</div>
+<div class="font-code-tabular text-headline-sm text-on-surface mt-1">768-dim vectors</div>
+<div class="font-label-sm text-label-sm text-secondary mt-0.5">LanceDB Local Partition</div>
+</div>
+<div class="border-l-2 border-outline-variant pl-3">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Inference Rate</div>
+<div class="font-code-tabular text-headline-sm text-on-surface mt-1">342 tok/s</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">AVX-512 Host Bound</div>
+</div>
+</div>
+<!-- Hairline Progress Line -->
+<div class="w-full bg-surface-container-highest h-1 mt-4 relative">
+<div class="bg-primary h-1" style="width: 59.1%;"></div>
+</div>
+</section>
+<!-- LOWER ASYMMETRICAL GRID (70% Table Archive / 30% Claim Preview) -->
+<section class="grid grid-cols-1 lg:grid-cols-10 gap-0 border hairline-border">
+<!-- =================================================================== -->
+<!-- LEFT PANEL (70%): Archive of Active Local Corpora                   -->
+<!-- =================================================================== -->
+<div class="lg:col-span-7 border-b lg:border-b-0 lg:border-r hairline-border bg-surface-container-lowest flex flex-col">
+<!-- Sub-header bar -->
+<div class="p-3 border-b hairline-border bg-surface flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">inventory_2</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Registered Corpus Filings</h3>
+<span class="font-code-tabular text-label-sm text-on-surface-variant">(5 Corpora Verified)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-wider font-label-sm">Filter:</span>
+<span class="font-code-tabular text-label-sm px-2 py-0.5 bg-surface-container border hairline-border text-on-surface">All Partitions</span>
+</div>
+</div>
+<!-- Tabular View -->
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse font-code-tabular text-code-tabular">
+<thead>
+<tr class="border-b hairline-border bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-2.5 px-3">Document Classification</th>
+<th class="py-2.5 px-3">SHA-256 Digest</th>
+<th class="py-2.5 px-3 text-right">Claim Density</th>
+<th class="py-2.5 px-3">Status</th>
+<th class="py-2.5 px-3 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y hairline-border">
+<!-- Row 1: Kudankulam Tariffs (Selected Row) -->
+<tr class="bg-surface-container hover:bg-surface-container text-on-surface border-l-2 border-l-primary cursor-pointer group">
+<td class="py-3 px-3">
+<div class="font-medium text-on-surface">NPCIL_Kudankulam_Tariff_Order_2023.pdf</div>
+<div class="text-label-sm text-on-surface-variant font-label-sm">Filing: NPCIL / Statutory Energy Determination</div>
+</td>
+<td class="py-3 px-3 text-on-surface-variant">
+<span class="font-mono text-label-sm text-tertiary">e8b7...41d9</span>
+</td>
+<td class="py-3 px-3 text-right font-code-tabular text-on-surface">
+                    0.38 <span class="text-on-surface-variant text-[10px]">clm/pg</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-block px-1.5 py-0.5 border border-secondary text-secondary text-label-sm uppercase">
+                      Verified Statutory
+                    </span>
+</td>
+<td class="py-3 px-3 text-right space-x-2">
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Re-Index</button>
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Export</button>
+</td>
+</tr>
+<!-- Row 2: CAG Audit (Currently Parsing) -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low text-on-surface cursor-pointer">
+<td class="py-3 px-3">
+<div class="font-medium text-on-surface">CAG_Audit_Nuclear_Tariffs_2023.pdf</div>
+<div class="text-label-sm text-on-surface-variant font-label-sm">Filing: Comptroller &amp; Auditor General Report No. 19</div>
+</td>
+<td class="py-3 px-3 text-on-surface-variant">
+<span class="font-mono text-label-sm text-tertiary">3f90...88e1</span>
+</td>
+<td class="py-3 px-3 text-right font-code-tabular text-primary">
+                    0.57 <span class="text-on-surface-variant text-[10px]">clm/pg</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-block px-1.5 py-0.5 border border-primary text-primary text-label-sm uppercase">
+                      Parsing (Page 84)
+                    </span>
+</td>
+<td class="py-3 px-3 text-right space-x-2">
+<button class="text-outline text-label-sm cursor-not-allowed">Halt Job</button>
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Logs</button>
+</td>
+</tr>
+<!-- Row 3: CEA Generation Report -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low text-on-surface cursor-pointer">
+<td class="py-3 px-3">
+<div class="font-medium text-on-surface">CEA_National_Electricity_Plan_2022_32.pdf</div>
+<div class="text-label-sm text-on-surface-variant font-label-sm">Filing: Central Electricity Authority Statutory Plan</div>
+</td>
+<td class="py-3 px-3 text-on-surface-variant">
+<span class="font-mono text-label-sm text-tertiary">7a12...cb09</span>
+</td>
+<td class="py-3 px-3 text-right font-code-tabular text-on-surface">
+                    0.82 <span class="text-on-surface-variant text-[10px]">clm/pg</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-block px-1.5 py-0.5 border border-secondary text-secondary text-label-sm uppercase">
+                      Verified Statutory
+                    </span>
+</td>
+<td class="py-3 px-3 text-right space-x-2">
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Re-Index</button>
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Export</button>
+</td>
+</tr>
+<!-- Row 4: Lok Sabha Unstarred Question -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low text-on-surface cursor-pointer">
+<td class="py-3 px-3">
+<div class="font-medium text-on-surface">Lok_Sabha_Unstarred_Q2491_Atomic_CapEx.pdf</div>
+<div class="text-label-sm text-on-surface-variant font-label-sm">Filing: Ministry of Personnel, Public Grievances and Pensions</div>
+</td>
+<td class="py-3 px-3 text-on-surface-variant">
+<span class="font-mono text-label-sm text-tertiary">11ac...9923</span>
+</td>
+<td class="py-3 px-3 text-right font-code-tabular text-on-surface">
+                    0.21 <span class="text-on-surface-variant text-[10px]">clm/pg</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-block px-1.5 py-0.5 border border-[#d97706] text-primary text-label-sm uppercase bg-[#d97706]/10">
+                      Disputed Corpus
+                    </span>
+</td>
+<td class="py-3 px-3 text-right space-x-2">
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Re-Index</button>
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Export</button>
+</td>
+</tr>
+<!-- Row 5: Nature Energy Corroboration Study -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low text-on-surface cursor-pointer">
+<td class="py-3 px-3">
+<div class="font-medium text-on-surface">NatureEnergy_Vol8_Levelized_Nuclear_India.pdf</div>
+<div class="text-label-sm text-on-surface-variant font-label-sm">Filing: Peer-Reviewed Empirical Dataset (DOI: 10.1038/s41560)</div>
+</td>
+<td class="py-3 px-3 text-on-surface-variant">
+<span class="font-mono text-label-sm text-tertiary">d44e...911b</span>
+</td>
+<td class="py-3 px-3 text-right font-code-tabular text-on-surface">
+                    1.14 <span class="text-on-surface-variant text-[10px]">clm/pg</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-block px-1.5 py-0.5 border border-secondary text-secondary text-label-sm uppercase">
+                      Verified Statutory
+                    </span>
+</td>
+<td class="py-3 px-3 text-right space-x-2">
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Re-Index</button>
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Export</button>
+</td>
+</tr>
+<!-- Row 6: BNEF Global Nuclear Horizon -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low text-on-surface cursor-pointer">
+<td class="py-3 px-3">
+<div class="font-medium text-on-surface">BNEF_Nuclear_Capex_Overrun_Benchmark_Q3.pdf</div>
+<div class="text-label-sm text-on-surface-variant font-label-sm">Filing: BloombergNEF Specialist Benchmark Index</div>
+</td>
+<td class="py-3 px-3 text-on-surface-variant">
+<span class="font-mono text-label-sm text-tertiary">9c02...7f56</span>
+</td>
+<td class="py-3 px-3 text-right font-code-tabular text-on-surface">
+                    0.64 <span class="text-on-surface-variant text-[10px]">clm/pg</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-block px-1.5 py-0.5 border border-secondary text-secondary text-label-sm uppercase">
+                      Verified Statutory
+                    </span>
+</td>
+<td class="py-3 px-3 text-right space-x-2">
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Re-Index</button>
+<button class="hover:text-primary underline text-on-surface-variant text-label-sm">Export</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Bottom Ledger Status / Ingestion Summary -->
+<div class="mt-auto p-3 border-t hairline-border bg-surface-container-low flex items-center justify-between text-on-surface-variant font-code-tabular text-label-sm">
+<div class="flex items-center gap-4">
+<span>TOTAL PARQUET FOOTPRINT: 1.48 GB</span>
+<span>INDEXED NODES: 14,892 VECTORS</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-secondary">CORPUS SYNCHRONIZED</span>
+<span class="text-outline">|</span>
+<a class="hover:text-primary underline" href="#">Download Corpus SHA-256 Tree</a>
+</div>
+</div>
+</div>
+<!-- =================================================================== -->
+<!-- RIGHT PANEL (30%): Selected Document Claim Extraction Preview       -->
+<!-- =================================================================== -->
+<div class="lg:col-span-3 bg-surface-container-low p-4 flex flex-col justify-between space-y-4">
+<div>
+<!-- Header Dossier Stamp -->
+<div class="flex items-center justify-between pb-3 border-b hairline-border">
+<div class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">
+                Claim Inspection Preview
+              </div>
+<div class="border border-secondary text-secondary px-2 py-0.5 font-code-tabular text-label-sm uppercase">
+                CONFIDENCE: 0.994
+              </div>
+</div>
+<!-- Target Document Identity -->
+<div class="mt-3 pb-3 border-b hairline-border space-y-1">
+<div class="font-code-tabular text-code-tabular text-primary">NPCIL_Kudankulam_Tariff_Order_2023.pdf</div>
+<div class="font-code-tabular text-label-sm text-on-surface-variant">TARGET PAGE: 42 // PARAGRAPH 18.b</div>
+<div class="font-code-tabular text-label-sm text-on-surface-variant font-mono">SHA: e8b74a00994f4a33c6e94a8...</div>
+</div>
+<!-- Verbatim Claims In Serif Typographic System -->
+<div class="mt-4 space-y-4">
+<!-- Claim 1 -->
+<div class="p-3 bg-surface-container-lowest border hairline-border space-y-2">
+<div class="flex items-center justify-between text-on-surface-variant font-code-tabular text-label-sm">
+<span>CLAIM #01 // PARSED STATUTE</span>
+<span class="text-secondary font-bold">δ = 0.0012</span>
+</div>
+<blockquote class="font-body-lg text-body-lg text-on-surface italic leading-relaxed border-l-2 border-primary pl-3">
+                  “NPCIL Tariffs for Kudankulam Units 1-2 calculated at ₹4.47/unit under exemption clause §62 of the Electricity Act 2003, revised from provisional base rate ₹3.94/unit.”
+                </blockquote>
+<div class="flex items-center justify-between text-label-sm font-label-sm pt-1 text-on-surface-variant border-t hairline-border">
+<span>Cross-Corroborated: CEA-2022</span>
+<span class="text-secondary">EVIDENTIARY WEIGHT: 98%</span>
+</div>
+</div>
+<!-- Claim 2 -->
+<div class="p-3 bg-surface-container-lowest border hairline-border space-y-2">
+<div class="flex items-center justify-between text-on-surface-variant font-code-tabular text-label-sm">
+<span>CLAIM #02 // CONTESTED SUB-PROPOSITION</span>
+<span class="text-primary font-bold">δ = 0.0480</span>
+</div>
+<blockquote class="font-body-lg text-body-lg text-on-surface italic leading-relaxed border-l-2 border-[#d97706] pl-3">
+                  “Fuel replenishment amortization schedule excludes heavy water inventory interest charges, deferred to supplementary sovereign grant allocation 41-B.”
+                </blockquote>
+<div class="flex items-center justify-between text-label-sm font-label-sm pt-1 text-on-surface-variant border-t hairline-border">
+<span>Discrepancy: CAG Report No. 19</span>
+<span class="text-primary">CONTESTED BY AUDIT</span>
+</div>
+</div>
+<!-- Claim 3 -->
+<div class="p-3 bg-surface-container-lowest border hairline-border space-y-2">
+<div class="flex items-center justify-between text-on-surface-variant font-code-tabular text-label-sm">
+<span>CLAIM #03 // STATUTORY CITATION</span>
+<span class="text-secondary font-bold">δ = 0.0008</span>
+</div>
+<blockquote class="font-body-lg text-body-lg text-on-surface italic leading-relaxed border-l-2 border-secondary pl-3">
+                  “Units 3 &amp; 4 capital cost revised to ₹89,470 crore with borrowing ceiling pegged at 6.85% coupon sovereign debt instruments.”
+                </blockquote>
+<div class="flex items-center justify-between text-label-sm font-label-sm pt-1 text-on-surface-variant border-t hairline-border">
+<span>Corroborated: Lok Sabha Q2491</span>
+<span class="text-secondary">STABLE STATUTE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Inspector Actions -->
+<div class="pt-3 border-t hairline-border space-y-2">
+<button class="w-full py-2 bg-primary-container text-on-primary font-code-tabular text-code-tabular font-medium hover:bg-primary flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">compare_arrows</span>
+<span>Send Claims to Contradiction Matrix</span>
+</button>
+<div class="flex items-center justify-between text-on-surface-variant font-code-tabular text-label-sm">
+<span>ACTIVE CLUSTER: #KKNPP-2023-V</span>
+<a class="hover:text-primary underline" href="#">Inspect Vectors (LanceDB)</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Sovereign Archival Footer Strip -->
+<footer class="w-full px-6 py-2 bg-surface-container-lowest border-t hairline-border flex items-center justify-between font-code-tabular text-label-sm text-on-surface-variant select-none">
+<div class="flex items-center gap-4">
+<span>RESEARCHFORGE SOVEREIGN ARCHIVAL SHELL</span>
+<span class="text-outline">/</span>
+<span>SESSION: 0x9482_ARCH_DETERMINISTIC</span>
+</div>
+<div class="flex items-center gap-4">
+<span>HARDWARE ATTESTATION: ENCLAVE_ACTIVE</span>
+<span class="w-2 h-2 bg-secondary inline-block"></span>
+</div>
+</footer>
+</div>
+</body></html>

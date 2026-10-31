@@ -1,86 +1,254 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: #08090b;
+  --color-surface: #101319;
+  --color-surface-dim: #101319;
+  --color-surface-bright: #363940;
+  --color-surface-container-lowest: #0b0e14;
+  --color-surface-container-low: #191c22;
+  --color-surface-container: #1d2026;
+  --color-surface-container-high: #272a31;
+  --color-surface-container-highest: #32353c;
+  --color-on-surface: #e1e2eb;
+  --color-on-surface-variant: #dbc2b0;
+  --color-outline: #a38c7c;
+  --color-outline-variant: #2a3142;
+  --color-hairline: #222735;
+  --color-primary: #ffb77d;
+  --color-primary-container: #d97706;
+  --color-on-primary: #4d2600;
+  --color-on-primary-container: #08090b;
+  --color-secondary: #4edea3;
+  --color-secondary-container: #00a572;
+  --color-on-secondary: #003824;
+  --color-tertiary: #b9c8de;
+  --color-tertiary-container: #8392a6;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  
+  --font-serif: var(--font-newsreader), Newsreader, Georgia, serif;
+  --font-sans: var(--font-inter), Inter, -apple-system, sans-serif;
+  --font-mono: var(--font-inter), Inter, monospace;
+}
+
 :root {
-  --background: #07090e;
-  --foreground: #f1f5f9;
-  --card-bg: rgba(15, 23, 42, 0.75);
-  --card-border: rgba(255, 255, 255, 0.08);
+  --background: #08090b;
+  --surface: #101319;
+  --surface-container-lowest: #0b0e14;
+  --surface-container-low: #191c22;
+  --surface-container: #1d2026;
+  --surface-container-high: #272a31;
+  --surface-container-highest: #32353c;
+  --on-surface: #e1e2eb;
+  --on-surface-variant: #dbc2b0;
+  --outline: #a38c7c;
+  --outline-variant: #2a3142;
+  --hairline-border: #222735;
+  --primary: #ffb77d;
+  --primary-container: #d97706;
+  --secondary: #4edea3;
+  --secondary-container: #00a572;
+  --tertiary: #b9c8de;
+  --error: #ffb4ab;
+}
+
+/* Strict Archival Monastic Brutalism: 0px Border Radius */
+* {
+  border-radius: 0px !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  font-family: var(--font-inter), Inter, -apple-system, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom modern scrollbar */
+/* Tabular figures for data integrity */
+.tabular-nums,
+[data-tabular="true"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Monastic Brutalist Scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #07090e;
+  background: #0b0e14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
+  background: #32353c;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #554336;
 }
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Material Symbols configuration */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  font-size: 1.125rem;
+  line-height: 1;
 }
 
-.glass-panel-glow {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.08);
+/* Typography Hierarchy according to Stitch DESIGN.md */
+.font-headline-xl {
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 3rem;
+  line-height: 3.25rem;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+}
+@media (min-width: 768px) {
+  .font-headline-xl {
+    font-size: 3.5rem;
+    line-height: 3.75rem;
+  }
 }
 
-/* Markdown typography inside reports */
+.font-headline-lg {
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 2rem;
+  line-height: 2.25rem;
+  letter-spacing: -0.025em;
+  font-weight: 400;
+}
+@media (min-width: 768px) {
+  .font-headline-lg {
+    font-size: 2.5rem;
+    line-height: 2.75rem;
+  }
+}
+
+.font-headline-md {
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 1.5rem;
+  line-height: 1.875rem;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+}
+@media (min-width: 768px) {
+  .font-headline-md {
+    font-size: 1.75rem;
+    line-height: 2.125rem;
+  }
+}
+
+.font-headline-sm {
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 1.25rem;
+  line-height: 1.625rem;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+.font-body-lg {
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.font-body-md {
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+
+.font-body-sm {
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.font-label-md {
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1rem;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+.font-label-sm {
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-size: 0.6875rem;
+  line-height: 0.875rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.font-code-tabular {
+  font-family: var(--font-inter), Inter, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline borders matching Stitch letterpress lines */
+.border-hairline {
+  border-color: #222735;
+}
+.border-hairline-active {
+  border-color: #2a3142;
+}
+
+/* Markdown typography inside Epistemic Ledger (ReportView) */
+.markdown-body {
+  color: #e1e2eb;
+}
+
 .markdown-body h1 {
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: #f8fafc;
-  margin-top: 1.5rem;
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 2rem;
+  font-weight: 400;
+  color: #f1f5f9;
+  margin-top: 2rem;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  border-bottom: 1px solid #222735;
+  padding-bottom: 0.5rem;
 }
 
 .markdown-body h2 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #38bdf8;
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #ffb77d;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #222735;
   padding-bottom: 0.4rem;
 }
 
 .markdown-body h3 {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #a5b4fc;
-  margin-top: 1.25rem;
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  margin-top: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
 .markdown-body p {
-  line-height: 1.75;
+  line-height: 1.7;
   color: #cbd5e1;
   margin-bottom: 1rem;
+  font-size: 0.9375rem;
 }
 
-.markdown-body ul, .markdown-body ol {
+.markdown-body ul,
+.markdown-body ol {
   margin-left: 1.5rem;
   margin-bottom: 1rem;
   color: #cbd5e1;
@@ -92,38 +260,65 @@ body {
 }
 
 .markdown-body blockquote {
-  border-left: 4px solid #38bdf8;
-  padding-left: 1rem;
+  border-left: 2px solid #d97706;
+  background-color: rgba(217, 119, 6, 0.04);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-newsreader), Newsreader, Georgia, serif;
   font-style: italic;
-  color: #94a3b8;
+  color: #e1e2eb;
   margin: 1.25rem 0;
 }
 
 .markdown-body code {
-  background: rgba(30, 41, 59, 0.8);
+  background: #191c22;
   padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.88em;
-  color: #38bdf8;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85em;
+  color: #ffb77d;
+  border: 1px solid #2a3142;
+  font-family: var(--font-inter), Inter, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.markdown-body pre code {
+  display: block;
+  padding: 1rem;
+  overflow-x: auto;
+  background: #0b0e14;
+  border: 1px solid #222735;
 }
 
 .markdown-body a {
-  color: #38bdf8;
+  color: #ffb77d;
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: color 0.2s;
+  transition: color 0.15s;
 }
 
 .markdown-body a:hover {
-  color: #7dd3fc;
+  color: #ffdcc3;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  border: 1px solid #222735;
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 3s infinite ease-in-out;
+.markdown-body th {
+  background: #191c22;
+  border: 1px solid #222735;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-align: left;
+}
+
+.markdown-body td {
+  border: 1px solid #222735;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
 }

@@ -1,11 +1,19 @@
 import re
-from urllib.parse import urlparse
+import json
+import urllib.request
+import xml.etree.ElementTree as ET
+from urllib.parse import urlparse, quote_plus
 from typing import List, Dict, Any
 
+
 try:
-    from duckduckgo_search import DDGS
+    from ddgs import DDGS
 except ImportError:
-    DDGS = None
+    try:
+        from duckduckgo_search import DDGS
+    except ImportError:
+        DDGS = None
+
 
 DOMAIN_TYPE_MAP = {
     "gov": ("Government", 0.95),
@@ -60,12 +68,66 @@ def classify_domain(url: str) -> tuple[str, float]:
     except Exception:
         return "Other", 0.50
 
+def search_wikipedia(query: str, limit: int = 4) -> List[Dict[str, Any]]:
+    """Free, reliable fallback search using Wikipedia OpenSearch API."""
+    results = []
+    try:
+        url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={quote_plus(query)}&limit={limit}&namespace=0&format=json"
+        req = urllib.request.Request(url, headers={"User-Agent": "ResearchForge/1.0 (Local Research Assistant)"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+            titles, descriptions, urls = data[1], data[2], data[3]
+            for t, d, u in zip(titles, descriptions, urls):
+                if u:
+                    results.append({
+                        "title": t,
+                        "url": u,
+                        "domain": "wikipedia.org",
+                        "source_type": "Academic",
+                        "snippet": d or f"Comprehensive overview and citations regarding {t}.",
+                        "reliability": 0.88,
+                        "relevance": 0.85
+                    })
+    except Exception as e:
+        print(f"[Search Tool] Wikipedia search fallback error: {e}")
+    return results
+
+def search_arxiv(query: str, limit: int = 3) -> List[Dict[str, Any]]:
+    """Free academic paper fallback search using ArXiv API."""
+    results = []
+    try:
+        url = f"http://export.arxiv.org/api/query?search_query=all:{quote_plus(query)}&start=0&max_results={limit}"
+        req = urllib.request.Request(url, headers={"User-Agent": "ResearchForge/1.0 (Local Research Assistant)"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            root = ET.fromstring(resp.read())
+            ns = {"atom": "http://www.w3.org/2005/Atom"}
+            for entry in root.findall("atom:entry", ns):
+                title = entry.find("atom:title", ns)
+                summary = entry.find("atom:summary", ns)
+                link = entry.find("atom:id", ns)
+                t_str = " ".join(title.text.split()) if title is not None and title.text else "Untitled Paper"
+                s_str = " ".join(summary.text.split())[:350] if summary is not None and summary.text else ""
+                l_str = link.text.strip() if link is not None and link.text else ""
+                if l_str:
+                    results.append({
+                        "title": t_str,
+                        "url": l_str,
+                        "domain": "arxiv.org",
+                        "source_type": "Research Paper",
+                        "snippet": s_str,
+                        "reliability": 0.94,
+                        "relevance": 0.90
+                    })
+    except Exception as e:
+        print(f"[Search Tool] ArXiv search fallback error: {e}")
+    return results
+
 def search_duckduckgo(query: str, max_results: int = 8) -> List[Dict[str, Any]]:
-    """Performs a web search using DuckDuckGo (₹0 cost) and extracts sources."""
+    """Performs a web search using DuckDuckGo with Wikipedia and ArXiv fallbacks."""
     results = []
     if DDGS is not None:
         try:
-            with DDGS() as ddgs:
+            with DDGS(timeout=10) as ddgs:
                 ddg_results = list(ddgs.text(query, max_results=max_results))
                 for item in ddg_results:
                     url = item.get("href") or item.get("link") or ""
@@ -91,7 +153,13 @@ def search_duckduckgo(query: str, max_results: int = 8) -> List[Dict[str, Any]]:
         except Exception as e:
             print(f"[Search Tool] DDGS search error: {e}")
 
-    # Deduplicate by domain or URL
+    # If DDGS returned few or zero results, augment with Wikipedia and ArXiv
+    if len(results) < 4:
+        results.extend(search_wikipedia(query, limit=3))
+    if len(results) < 4:
+        results.extend(search_arxiv(query, limit=2))
+
+    # Deduplicate by URL
     seen_urls = set()
     deduped = []
     for r in results:
@@ -100,3 +168,4 @@ def search_duckduckgo(query: str, max_results: int = 8) -> List[Dict[str, Any]]:
             deduped.append(r)
             
     return deduped
+

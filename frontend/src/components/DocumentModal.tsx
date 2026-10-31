@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { X, UploadCloud, FileText, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { X, UploadCloud, FileText, Check, Loader2, AlertTriangle, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
 
 interface DocumentModalProps {
@@ -36,7 +36,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ isOpen, onClose, o
       const res = await api.uploadDocument(file);
       setUploadResult({ id: res.id, filename: res.filename, pages: res.pages });
     } catch (err: any) {
-      setError(err.message || "Failed to upload document");
+      setError(err.message || "Failed to parse document");
     } finally {
       setIsUploading(false);
     }
@@ -58,23 +58,30 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ isOpen, onClose, o
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="glass-panel w-full max-w-lg rounded-2xl p-6 border border-white/10 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-none">
+      <div className="w-full max-w-xl bg-[#0b0e14] border border-[#222735] p-6 text-[#e1e2eb] relative">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
+          className="absolute top-4 right-4 p-1 text-[#a38c7c] hover:text-[#f1f5f9] border border-[#222735] bg-[#101319] cursor-pointer"
+          aria-label="Close modal"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center space-x-2.5 mb-2">
-          <div className="p-2 rounded-xl bg-cyan-950 text-cyan-400 border border-cyan-800/40">
-            <FileText className="w-5 h-5" />
+        {/* Modal Header */}
+        <div className="pb-4 border-b border-[#222735]">
+          <div className="flex items-center gap-2 font-mono text-[10px] text-[#ffb77d] uppercase tracking-wider mb-1">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Air-Gapped Ingestion Chamber</span>
           </div>
-          <div>
-            <h3 className="text-base font-bold text-white">Local Document Research</h3>
-            <p className="text-xs text-slate-400">Analyze local PDFs, DOCX, and TXT files securely with zero cloud exposure.</p>
-          </div>
+          <h3 className="font-serif text-2xl text-[#f1f5f9] font-normal">
+            Corpus Ingestion &amp; Parsing Pipeline
+          </h3>
+          <p className="text-xs text-[#dbc2b0] mt-1">
+            Ingest local primary dossiers, statutory PDF filings, legal gazettes, and academic texts.
+            All parsing is executed locally on POSIX threads with zero cloud exposure.
+          </p>
         </div>
 
         {/* Upload Zone */}
@@ -84,10 +91,10 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ isOpen, onClose, o
           onDragOver={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`mt-5 border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center ${
+          className={`mt-5 border border-dashed p-8 text-center cursor-pointer transition-none flex flex-col items-center justify-center ${
             dragActive
-              ? "border-cyan-400 bg-cyan-950/20"
-              : "border-slate-700/80 hover:border-slate-500 bg-slate-900/40"
+              ? "border-[#ffb77d] bg-[#d97706]/10"
+              : "border-[#2a3142] hover:border-[#a38c7c] bg-[#101319]"
           }`}
         >
           <input
@@ -98,35 +105,43 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ isOpen, onClose, o
             className="hidden"
           />
 
-          <UploadCloud className="w-10 h-10 text-cyan-400 mb-3 animate-bounce" />
-          <p className="text-sm font-semibold text-white">Click or drag & drop files here</p>
-          <p className="text-xs text-slate-400 mt-1">Supports PDF, DOCX, TXT, MD (Up to 50MB)</p>
-          <span className="text-[10px] text-emerald-400 mt-2 font-mono">100% Local Machine Processing</span>
+          <UploadCloud className="w-8 h-8 text-[#ffb77d] mb-2" />
+          <p className="font-mono text-sm font-semibold text-[#f1f5f9]">
+            SELECT OR DRAG &amp; DROP ARCHIVAL RECORD
+          </p>
+          <p className="text-xs text-[#a38c7c] font-mono mt-1">
+            Permitted: PDF, DOCX, TXT, MD (Max 50MB per dossier)
+          </p>
+          <div className="mt-3 text-[10px] font-mono text-[#4edea3] border border-[#10b981]/40 bg-[#10b981]/10 px-2 py-0.5">
+            LOCAL ENGINE: DETERMINISTIC EXTRACTION
+          </div>
         </div>
 
-        {/* Upload Status */}
+        {/* Uploading Status */}
         {isUploading && (
-          <div className="mt-4 p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center space-x-3 text-xs text-slate-300">
-            <Loader2 className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
+          <div className="mt-4 p-3 bg-[#101319] border border-[#222735] flex items-center gap-3 text-xs font-mono text-[#dbc2b0]">
+            <Loader2 className="w-4 h-4 text-[#ffb77d] animate-spin shrink-0" />
             <span>Parsing document pages and extracting text passages locally...</span>
           </div>
         )}
 
+        {/* Error message */}
         {error && (
-          <div className="mt-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800/40 flex items-center space-x-3 text-xs text-rose-300">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          <div className="mt-4 p-3 bg-[#93000a]/20 border border-[#dc2626] flex items-center gap-3 text-xs font-mono text-[#ffb4ab]">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
+        {/* Upload Success Result */}
         {uploadResult && (
-          <div className="mt-4 p-4 rounded-xl bg-slate-900 border border-emerald-800/40 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs font-bold text-white truncate max-w-[220px]">{uploadResult.filename}</span>
+          <div className="mt-4 p-4 bg-[#101319] border border-[#10b981] space-y-3 font-mono">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2 truncate">
+                <Check className="w-4 h-4 text-[#4edea3] shrink-0" />
+                <span className="font-bold text-[#f1f5f9] truncate">{uploadResult.filename}</span>
               </div>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300">
+              <span className="text-[11px] px-2 py-0.5 bg-[#10b981]/10 border border-[#10b981] text-[#4edea3] shrink-0">
                 {uploadResult.pages} Page(s) Parsed
               </span>
             </div>
@@ -136,9 +151,9 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ isOpen, onClose, o
                 onDocumentReady(uploadResult.id, uploadResult.filename);
                 onClose();
               }}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold text-xs tracking-wide transition hover:opacity-90 shadow-lg shadow-cyan-500/20"
+              className="w-full py-2.5 bg-[#d97706] hover:bg-[#ffb77d] text-[#08090b] font-bold text-xs uppercase tracking-wider transition-none cursor-pointer"
             >
-              Start Document Research With This File
+              Execute Epistemic Audit With Ingested Document
             </button>
           </div>
         )}

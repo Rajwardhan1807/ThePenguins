@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2, Loader2, Clock, AlertTriangle, ChevronRight, Terminal } from "lucide-react";
+import { Check, Loader2, Clock, AlertTriangle, Terminal, ChevronRight } from "lucide-react";
 import { AgentStates, TimelineEvent } from "@/lib/api";
 
 interface AgentTimelineProps {
@@ -15,29 +15,29 @@ export const AgentTimeline: React.FC<AgentTimelineProps> = ({ agents, events, cu
     switch (state) {
       case "completed":
         return (
-          <span className="flex items-center space-x-1 text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded text-[11px] font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <span className="flex items-center gap-1.5 text-[#4edea3] bg-[#10b981]/10 border border-[#10b981] px-2 py-0.5 text-[10px] font-mono font-medium uppercase">
+            <Check className="w-3 h-3" />
             <span>Completed</span>
           </span>
         );
       case "running":
         return (
-          <span className="flex items-center space-x-1 text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded text-[11px] font-medium animate-pulse">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Active</span>
+          <span className="flex items-center gap-1.5 text-[#ffb77d] bg-[#d97706]/10 border border-[#d97706] px-2 py-0.5 text-[10px] font-mono font-medium uppercase animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            <span>Active Audit</span>
           </span>
         );
       case "failed":
         return (
-          <span className="flex items-center space-x-1 text-rose-400 bg-rose-950/60 border border-rose-800/40 px-2 py-0.5 rounded text-[11px] font-medium">
-            <AlertTriangle className="w-3.5 h-3.5" />
+          <span className="flex items-center gap-1.5 text-[#ffb4ab] bg-[#93000a]/20 border border-[#dc2626] px-2 py-0.5 text-[10px] font-mono font-medium uppercase">
+            <AlertTriangle className="w-3 h-3" />
             <span>Failed</span>
           </span>
         );
       default:
         return (
-          <span className="flex items-center space-x-1 text-slate-500 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-[11px] font-medium">
-            <Clock className="w-3.5 h-3.5" />
+          <span className="flex items-center gap-1.5 text-[#a38c7c] bg-[#131720] border border-[#222735] px-2 py-0.5 text-[10px] font-mono font-medium uppercase">
+            <Clock className="w-3 h-3" />
             <span>Waiting</span>
           </span>
         );
@@ -49,158 +49,165 @@ export const AgentTimeline: React.FC<AgentTimelineProps> = ({ agents, events, cu
   const writerEvents = events.filter((e) => e.agent === "Writer Agent");
 
   return (
-    <div className="w-full glass-panel rounded-2xl p-6 border border-white/10 shadow-2xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-white/5 gap-2">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h2 className="text-base font-bold text-white tracking-wide">Multi-Agent Workflow Pipeline</h2>
-            <span className="px-2 py-0.5 text-[10px] font-mono rounded bg-cyan-950 text-cyan-400 border border-cyan-800/40">
-              Live Telemetry
-            </span>
-          </div>
-          {currentStep && (
-            <p className="text-xs text-cyan-300 font-mono mt-1 flex items-center space-x-1.5">
-              <ChevronRight className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-              <span>{currentStep}</span>
-            </p>
-          )}
+    <section className="w-full border border-[#222735] bg-[#0e1117]">
+      {/* Topology Header */}
+      <div className="px-5 py-3.5 border-b border-[#222735] bg-[#101319] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-mono text-[#ffb77d] uppercase tracking-wider font-semibold">
+            Sequential Pipeline Topology
+          </span>
+          <span className="text-[#a38c7c] text-xs">/</span>
+          <span className="text-[11px] font-mono text-[#a38c7c] uppercase">
+            DAG Mode: Acyclic Strict Swarm
+          </span>
         </div>
+        {currentStep && (
+          <div className="font-mono text-xs text-[#ffb77d] flex items-center gap-1.5 truncate max-w-md">
+            <ChevronRight className="w-3.5 h-3.5 text-[#ffb77d] shrink-0" />
+            <span className="truncate">{currentStep}</span>
+          </div>
+        )}
       </div>
 
-      {/* 3 Columns for 3 Agents */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* 01 Research Agent */}
+      {/* 3 Sequential Node Columns */}
+      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#222735]">
+        {/* Node 01: Research Agent */}
         <div
-          className={`p-4 rounded-xl border transition duration-300 flex flex-col justify-between ${
-            agents.researcher === "running"
-              ? "bg-cyan-950/20 border-cyan-500/50 shadow-lg shadow-cyan-950/50"
-              : agents.researcher === "completed"
-              ? "bg-slate-900/60 border-slate-700/60"
-              : "bg-slate-900/30 border-slate-800/40 opacity-70"
+          className={`p-5 flex flex-col justify-between transition-none ${
+            agents.researcher === "running" ? "bg-[#131720] border-l-2 border-[#ffb77d]" : "bg-[#0e1117]"
           }`}
         >
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-mono font-semibold text-cyan-400">STAGE 01</span>
+            <div className="flex items-start justify-between mb-2">
+              <span className="font-mono text-xs text-[#a38c7c]">NODE // 01</span>
               {getStatusBadge(agents.researcher)}
             </div>
-            <h3 className="text-sm font-bold text-white mb-1">Research Agent</h3>
-            <p className="text-[11px] text-slate-400 mb-3">Multi-query search & source scraping</p>
+            <h3 className="font-serif text-base text-[#f1f5f9] mb-1 font-medium">Research Agent</h3>
+            <p className="text-xs text-[#dbc2b0] mb-3">
+              Formulation of search queries &amp; extraction of empirical sources.
+            </p>
 
-            {/* Event list */}
-            <div className="space-y-1.5 min-h-[100px]">
-              {researcherEvents.slice(-4).map((ev, i) => (
-                <div key={i} className="text-xs text-slate-300 flex items-start space-x-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
-                  <span className="line-clamp-2">{ev.step}</span>
+            {/* Event List */}
+            <div className="space-y-1.5 min-h-[90px] font-mono text-xs border-t border-[#222735] pt-2.5">
+              {researcherEvents.slice(-3).map((ev, i) => (
+                <div key={i} className="text-[#dbc2b0] flex items-start gap-1.5">
+                  <span className="text-[#4edea3] mt-0.5">✓</span>
+                  <span className="line-clamp-2 text-[11px]">{ev.step}</span>
                 </div>
               ))}
               {researcherEvents.length === 0 && agents.researcher === "running" && (
-                <div className="text-xs text-slate-500 italic flex items-center space-x-1.5">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
-                  <span>Generating queries and scraping...</span>
+                <div className="text-[#a38c7c] italic text-xs flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin text-[#ffb77d]" />
+                  <span>Generating queries and scraping corpus...</span>
                 </div>
+              )}
+              {agents.researcher === "waiting" && (
+                <span className="text-[11px] text-[#554336] italic">Node in queue</span>
               )}
             </div>
           </div>
         </div>
 
-        {/* 02 Fact-Check Agent */}
+        {/* Node 02: Fact-Check Agent */}
         <div
-          className={`p-4 rounded-xl border transition duration-300 flex flex-col justify-between ${
-            agents.fact_checker === "running"
-              ? "bg-purple-950/20 border-purple-500/50 shadow-lg shadow-purple-950/50"
-              : agents.fact_checker === "completed"
-              ? "bg-slate-900/60 border-slate-700/60"
-              : "bg-slate-900/30 border-slate-800/40 opacity-70"
+          className={`p-5 flex flex-col justify-between transition-none ${
+            agents.fact_checker === "running" ? "bg-[#131720] border-l-2 border-[#ffb77d]" : "bg-[#0e1117]"
           }`}
         >
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-mono font-semibold text-purple-400">STAGE 02</span>
+            <div className="flex items-start justify-between mb-2">
+              <span className="font-mono text-xs text-[#a38c7c]">NODE // 02</span>
               {getStatusBadge(agents.fact_checker)}
             </div>
-            <h3 className="text-sm font-bold text-white mb-1">Fact-Check Agent</h3>
-            <p className="text-[11px] text-slate-400 mb-3">Claim extraction & conflict detection</p>
+            <h3 className="font-serif text-base text-[#f1f5f9] mb-1 font-medium">Fact-Check Agent</h3>
+            <p className="text-xs text-[#dbc2b0] mb-3">
+              Claim atomization, source reliability assessment, &amp; contradiction detection.
+            </p>
 
-            {/* Event list */}
-            <div className="space-y-1.5 min-h-[100px]">
-              {factCheckerEvents.slice(-4).map((ev, i) => {
-                const isConflict = ev.step.toLowerCase().includes("conflict") || ev.detail?.toLowerCase().includes("conflict");
+            {/* Event List */}
+            <div className="space-y-1.5 min-h-[90px] font-mono text-xs border-t border-[#222735] pt-2.5">
+              {factCheckerEvents.slice(-3).map((ev, i) => {
+                const isConflict =
+                  ev.step.toLowerCase().includes("conflict") ||
+                  ev.detail?.toLowerCase().includes("conflict");
                 return (
-                  <div key={i} className="text-xs text-slate-300 flex items-start space-x-1.5">
-                    {isConflict ? (
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                    ) : (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
-                    )}
-                    <span className="line-clamp-2">{ev.step}</span>
+                  <div key={i} className="text-[#dbc2b0] flex items-start gap-1.5">
+                    <span className={isConflict ? "text-[#ffb77d] mt-0.5" : "text-[#4edea3] mt-0.5"}>
+                      {isConflict ? "⚠" : "✓"}
+                    </span>
+                    <span className="line-clamp-2 text-[11px]">{ev.step}</span>
                   </div>
                 );
               })}
               {factCheckerEvents.length === 0 && agents.fact_checker === "running" && (
-                <div className="text-xs text-slate-500 italic flex items-center space-x-1.5">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400" />
-                  <span>Cross-verifying claims across sources...</span>
+                <div className="text-[#a38c7c] italic text-xs flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin text-[#ffb77d]" />
+                  <span>Auditing claim integrity &amp; cross-verifying...</span>
                 </div>
+              )}
+              {agents.fact_checker === "waiting" && (
+                <span className="text-[11px] text-[#554336] italic">Node in queue</span>
               )}
             </div>
           </div>
         </div>
 
-        {/* 03 Writer Agent */}
+        {/* Node 03: Writer Agent */}
         <div
-          className={`p-4 rounded-xl border transition duration-300 flex flex-col justify-between ${
-            agents.writer === "running"
-              ? "bg-emerald-950/20 border-emerald-500/50 shadow-lg shadow-emerald-950/50"
-              : agents.writer === "completed"
-              ? "bg-slate-900/60 border-slate-700/60"
-              : "bg-slate-900/30 border-slate-800/40 opacity-70"
+          className={`p-5 flex flex-col justify-between transition-none ${
+            agents.writer === "running" ? "bg-[#131720] border-l-2 border-[#ffb77d]" : "bg-[#0e1117]"
           }`}
         >
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-mono font-semibold text-emerald-400">STAGE 03</span>
+            <div className="flex items-start justify-between mb-2">
+              <span className="font-mono text-xs text-[#a38c7c]">NODE // 03</span>
               {getStatusBadge(agents.writer)}
             </div>
-            <h3 className="text-sm font-bold text-white mb-1">Writer Agent</h3>
-            <p className="text-[11px] text-slate-400 mb-3">Evidence synthesis & cited reporting</p>
+            <h3 className="font-serif text-base text-[#f1f5f9] mb-1 font-medium">Writer Agent</h3>
+            <p className="text-xs text-[#dbc2b0] mb-3">
+              Epistemic brief synthesis, key findings adjudication, &amp; citation ledger.
+            </p>
 
-            {/* Event list */}
-            <div className="space-y-1.5 min-h-[100px]">
-              {writerEvents.slice(-4).map((ev, i) => (
-                <div key={i} className="text-xs text-slate-300 flex items-start space-x-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="line-clamp-2">{ev.step}</span>
+            {/* Event List */}
+            <div className="space-y-1.5 min-h-[90px] font-mono text-xs border-t border-[#222735] pt-2.5">
+              {writerEvents.slice(-3).map((ev, i) => (
+                <div key={i} className="text-[#dbc2b0] flex items-start gap-1.5">
+                  <span className="text-[#4edea3] mt-0.5">✓</span>
+                  <span className="line-clamp-2 text-[11px]">{ev.step}</span>
                 </div>
               ))}
               {writerEvents.length === 0 && agents.writer === "running" && (
-                <div className="text-xs text-slate-500 italic flex items-center space-x-1.5">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
-                  <span>Synthesizing findings and citing evidence...</span>
+                <div className="text-[#a38c7c] italic text-xs flex items-center gap-1.5">
+                  <Loader2 className="w-3 h-3 animate-spin text-[#ffb77d]" />
+                  <span>Compiling formal broadsheet report...</span>
                 </div>
+              )}
+              {agents.writer === "waiting" && (
+                <span className="text-[11px] text-[#554336] italic">Node in queue</span>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Terminal log ticker at bottom */}
+      {/* Terminal Live Ticker */}
       {events.length > 0 && (
-        <div className="mt-5 p-2.5 rounded-lg bg-[#04060a] border border-slate-800/80 font-mono text-[11px] text-slate-400 flex items-center justify-between">
-          <div className="flex items-center space-x-2 truncate">
-            <Terminal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-            <span className="text-slate-500">[{events[events.length - 1].agent}]:</span>
-            <span className="text-slate-300 truncate">{events[events.length - 1].step}</span>
+        <div className="border-t border-[#222735] bg-[#08090b] px-4 py-2 font-mono text-[11px] text-[#dbc2b0] flex items-center justify-between">
+          <div className="flex items-center gap-2 truncate">
+            <Terminal className="w-3.5 h-3.5 text-[#ffb77d] shrink-0" />
+            <span className="text-[#a38c7c]">[{events[events.length - 1].agent}]:</span>
+            <span className="text-[#e1e2eb] truncate">{events[events.length - 1].step}</span>
             {events[events.length - 1].detail && (
-              <span className="text-slate-500 hidden sm:inline truncate">— {events[events.length - 1].detail}</span>
+              <span className="text-[#a38c7c] hidden sm:inline truncate">
+                — {events[events.length - 1].detail}
+              </span>
             )}
           </div>
-          <span className="text-[10px] text-slate-600 shrink-0 pl-2">
+          <span className="text-[10px] text-[#a38c7c] shrink-0 pl-3">
             {events[events.length - 1].timestamp.slice(11, 19)} UTC
           </span>
         </div>
       )}
-    </div>
+    </section>
   );
 };

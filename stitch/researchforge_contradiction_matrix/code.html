@@ -1,0 +1,692 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ResearchForge — Contradiction Matrix &amp; Epistemic Ledger</title>
+<!-- Google Fonts: Newsreader (Editorial Serif) & Inter (Dense Tabular Sans) -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#dbc2b0",
+            "tertiary-fixed": "#d4e4fa",
+            "on-tertiary-container": "#1c2b3c",
+            "on-background": "#e1e2eb",
+            "secondary-container": "#00a572",
+            "on-secondary": "#003824",
+            "surface-variant": "#32353c",
+            "inverse-surface": "#e1e2eb",
+            "secondary-fixed": "#6ffbbe",
+            "on-surface": "#e1e2eb",
+            "surface-container": "#1d2026",
+            "on-tertiary-fixed-variant": "#39485a",
+            "surface-container-low": "#191c22",
+            "primary": "#ffb77d",
+            "on-secondary-fixed": "#002113",
+            "tertiary": "#b9c8de",
+            "on-secondary-container": "#00311f",
+            "inverse-primary": "#904d00",
+            "tertiary-fixed-dim": "#b9c8de",
+            "on-primary": "#4d2600",
+            "inverse-on-surface": "#2e3037",
+            "on-error": "#690005",
+            "on-secondary-fixed-variant": "#005236",
+            "surface-container-lowest": "#0b0e14",
+            "background": "#101319",
+            "on-error-container": "#ffdad6",
+            "surface-tint": "#ffb77d",
+            "outline-variant": "#554336",
+            "surface-dim": "#101319",
+            "surface-container-highest": "#32353c",
+            "secondary": "#4edea3",
+            "on-primary-container": "#432100",
+            "error": "#ffb4ab",
+            "secondary-fixed-dim": "#4edea3",
+            "on-tertiary": "#233143",
+            "surface-bright": "#363940",
+            "primary-fixed": "#ffdcc3",
+            "error-container": "#93000a",
+            "on-primary-fixed": "#2f1500",
+            "outline": "#a38c7c",
+            "tertiary-container": "#8392a6",
+            "primary-container": "#d97707",
+            "on-tertiary-fixed": "#0d1c2d",
+            "surface": "#101319",
+            "surface-container-high": "#272a31",
+            "primary-fixed-dim": "#ffb77d",
+            "on-primary-fixed-variant": "#6e3900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0px",
+            "none": "0px",
+            "sm": "0px",
+            "md": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "0px"
+          },
+          "spacing": {
+            "gutter": "0px",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "margin": "1.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Newsreader", "serif"],
+            "code-tabular": ["Inter", "monospace"],
+            "headline-md": ["Newsreader", "serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "headline-xl-mobile": ["Newsreader", "serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "body-lg": ["Newsreader", "serif"],
+            "headline-xl": ["Newsreader", "serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "headline-lg-mobile": ["Newsreader", "serif"]
+          },
+          "fontSize": {
+            "headline-sm": ["1.25rem", { "lineHeight": "1.625rem", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "code-tabular": ["0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "headline-md": ["1.75rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.015em", "fontWeight": "500" }],
+            "label-md": ["0.8125rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-xl-mobile": ["2.25rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.08em", "fontWeight": "600" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-xl": ["3.5rem", { "lineHeight": "3.75rem", "letterSpacing": "-0.03em", "fontWeight": "400" }],
+            "headline-lg": ["2.5rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.025em", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.015em", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Strict monastic print styling: crisp hair lines, non-decorative raster, exact letterpress logic */
+    * {
+      border-radius: 0px !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .material-symbols-outlined {
+      font-size: 1.125rem;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* Hairline border definition */
+    .hairline-border {
+      border-width: 1px;
+      border-style: solid;
+    }
+    /* Ledger scroll tracks */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0e14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #32353c;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #554336;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen selection:bg-primary-container selection:text-on-primary overflow-x-hidden antialiased">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT 1: SideNavBar (archival_docket)                           -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-72 bg-surface-container-lowest border-r border-outline-variant z-40 hidden xl:flex flex-col justify-between p-4">
+<!-- Header / Brand Seal -->
+<div class="space-y-4">
+<div class="pb-4 border-b border-outline-variant">
+<div class="flex items-center justify-between">
+<span class="text-headline-md font-headline-md italic text-primary tracking-tight" style="color: rgb(245, 158, 11);">ResearchForge</span>
+<span class="material-symbols-outlined text-outline-variant" title="ResearchForge sovereign seal">verified</span>
+</div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mt-1">Autonomous Evidentiary Terminal</p>
+</div>
+<!-- Docket Tabs -->
+<nav class="space-y-1">
+<!-- Tab 0: Current Briefing -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-none" href="#">
+<span class="material-symbols-outlined text-outline">article</span>
+<span class="">Current Briefing</span>
+</a>
+<!-- Tab 1: Primary Source Registry -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-none" href="#">
+<span class="material-symbols-outlined text-outline">folder_open</span>
+<span class="">Primary Source Registry</span>
+</a>
+<!-- Tab 2: Contradiction Matrix (ACTIVE ITEM) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-surface-container text-primary border-l-2 border-primary font-label-md text-label-md transition-none" href="#" style="border-left-color: rgb(245, 158, 11); color: rgb(251, 191, 36);">
+<span class="material-symbols-outlined text-primary">compare_arrows</span>
+<span class="font-semibold text-primary">Contradiction Matrix</span>
+</a>
+<!-- Tab 3: Adversarial Scrape Trees -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-none" href="#">
+<span class="material-symbols-outlined text-outline">account_tree</span>
+<span class="">Adversarial Scrape Trees</span>
+</a>
+<!-- Tab 4: Epistemic Ledger -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-none" href="#">
+<span class="material-symbols-outlined text-outline">fact_check</span>
+<span class="">Epistemic Ledger</span>
+</a>
+<!-- Tab 5: Corpus Discrepancies -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-none" href="#">
+<span class="material-symbols-outlined text-outline">rule</span>
+<span class="">Corpus Discrepancies</span>
+</a>
+<!-- Tab 6: System Parameters -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md text-label-md transition-none" href="#">
+<span class="material-symbols-outlined text-outline">tune</span>
+<span class="">System Parameters</span>
+</a>
+</nav>
+</div>
+<!-- CTA & Telemetry Footers -->
+<div class="space-y-4 pt-4 border-t border-outline-variant">
+<button class="w-full px-3 py-2.5 font-label-md text-label-md text-center uppercase tracking-wider font-semibold border-0 transition-none cursor-pointer flex items-center justify-center gap-2 text-slate-950 font-bold" style="background-color: rgb(245, 158, 11);">
+<span class="material-symbols-outlined text-slate-950 text-base font-bold">gavel</span>
+        Execute Epistemic Audit
+      </button>
+<div class="space-y-1.5 pt-2 border-t border-surface-variant">
+<div class="flex items-center justify-between text-code-tabular font-code-tabular text-on-surface-variant text-xs">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-outline text-xs">memory</span> Model Weights: Isolated</span>
+<span class="text-secondary text-xs">LOCAL-RING-0</span>
+</div>
+<div class="flex items-center justify-between text-code-tabular font-code-tabular text-on-surface-variant text-xs">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-outline text-xs">security</span> Network: 0 B Out</span>
+<span class="text-secondary text-xs">AIRGAPPED</span>
+</div>
+<div class="flex items-center justify-between text-code-tabular font-code-tabular text-on-surface-variant text-xs">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-outline text-xs">event</span> Cutoff: 2024-Q4</span>
+<span class="text-outline text-xs">SYNCD</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE CONTAINER (Offset by 18rem on XL)                          -->
+<!-- ========================================================================= -->
+<div class="xl:pl-72 flex flex-col min-h-screen">
+<!-- ======================================================================= -->
+<!-- SHARED COMPONENT 2: TopNavBar (broadsheet_masthead)                     -->
+<!-- ======================================================================= -->
+<header class="w-full bg-surface border-b border-outline-variant px-4 lg:px-6 py-2.5 flex items-center justify-between sticky top-0 z-30">
+<!-- Left Metadata Chips / Docket Identifiers -->
+<div class="flex flex-wrap items-center gap-4 text-code-tabular font-code-tabular">
+<div class="flex items-center gap-2">
+<span class="text-headline-sm font-headline-sm italic text-on-surface">ResearchForge</span>
+<span class="text-outline-variant font-code-tabular text-xs">/</span>
+</div>
+<span class="text-secondary font-code-tabular text-code-tabular tracking-wider uppercase">Dossier: REF-09482-ARCH</span>
+<span class="hidden md:inline-block text-outline-variant">|</span>
+<span class="hidden md:inline-block text-on-surface-variant font-code-tabular text-code-tabular">Mode: Statutory Corroboration</span>
+<span class="hidden lg:inline-block text-outline-variant">|</span>
+<span class="hidden lg:inline-block text-error font-code-tabular text-code-tabular">Tolerance: 0.002δ [HOSTILE]</span>
+<span class="hidden xl:inline-block text-outline-variant">|</span>
+<span class="hidden xl:inline-block text-on-surface-variant font-code-tabular text-code-tabular">Latency: 14ms</span>
+</div>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 pr-2 border-r border-outline-variant text-on-surface-variant">
+<button class="p-1 hover:text-primary hover:bg-surface-container-low transition-none cursor-pointer" title="Zero Egress Airgap">
+<span class="material-symbols-outlined">lock</span>
+</button>
+<button class="p-1 hover:text-primary hover:bg-surface-container-low transition-none cursor-pointer" title="Corpus Sync State">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<button class="p-1 hover:text-primary hover:bg-surface-container-low transition-none cursor-pointer" title="Open Forensic Subshell">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+</div>
+<button class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-on-surface-variant hover:text-primary hover:bg-surface-container-low font-code-tabular text-xs border border-outline-variant transition-none">
+<span class="">Export Ledger</span>
+</button>
+<button class="px-3 py-1 font-label-md text-xs font-bold uppercase tracking-wider transition-none cursor-pointer text-slate-950" style="background-color: rgb(245, 158, 11);">
+          Re-Index Corpus
+        </button>
+</div>
+</header>
+<!-- ======================================================================= -->
+<!-- EDITORIAL BROADSHEET HEADER AREA                                        -->
+<!-- ======================================================================= -->
+<div class="bg-surface-container-lowest border-b border-outline-variant px-4 lg:px-8 pt-6 pb-5">
+<!-- High Severity Alert Banner -->
+<div class="mb-5 border border-amber-500/80 bg-surface-container-low p-3 flex items-start sm:items-center justify-between gap-3" style="border-color: rgb(245, 158, 11); background-color: rgba(245, 158, 11, 0.05);">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined" style="color: #f59e0b;">warning</span>
+<span class="font-code-tabular text-code-tabular tracking-wider uppercase font-semibold" style="color: #fbbf24;">
+            3 UNRESOLVED METHODOLOGICAL SCHISMS DETECTED // AUDIT LEVEL: HOSTILE
+          </span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-sm font-label-sm uppercase text-outline hidden md:inline">CORPUS INGEST: 28 INSTITUTIONAL RECORDS</span>
+<span class="px-1.5 py-0.5 text-xs bg-surface-container-highest text-error font-code-tabular border border-outline-variant">NLI FAILURE RATE: 31.4%</span>
+</div>
+</div>
+<!-- Main Broadsheet Headlines -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="text-label-sm font-label-sm tracking-widest uppercase text-outline mb-1">
+            FORENSIC DISCREPANCY MATRIX &amp; PROVENANCE RECORD // JURISDICTION: IND-CENTRAL-CEA
+          </div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">
+            Contradiction Matrix &amp; Discrepancy Ledger
+          </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant italic mt-1 max-w-4xl">
+            Adversarial reconciliation of irreconcilable empirical claims across 28 ingested institutional records.
+          </p>
+</div>
+<div class="flex items-center gap-3 self-start md:self-end text-code-tabular font-code-tabular text-xs">
+<div class="border border-outline-variant px-3 py-1.5 bg-surface text-right">
+<span class="text-outline block text-[10px] uppercase">Contested Entities</span>
+<span class="text-primary font-bold text-sm" style="color: rgb(251, 191, 36);">NPCIL vs CAG/CEEW</span>
+</div>
+<div class="border border-outline-variant px-3 py-1.5 bg-surface text-right">
+<span class="text-outline block text-[10px] uppercase">NLI Verifier</span>
+<span class="text-secondary font-bold text-sm">Qwen 2.5 14B [Q4_K_M]</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ======================================================================= -->
+<!-- ASYMMETRICAL 2-COLUMN MAIN CONTENT WORKSPACE (72% / 28%)               -->
+<!-- ======================================================================= -->
+<main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 bg-background">
+<!-- ===================================================================== -->
+<!-- LEFT / CENTER COLUMN: Cross-Examination Matrix (Cols 1-8)              -->
+<!-- ===================================================================== -->
+<section class="lg:col-span-8 border-r border-outline-variant p-4 lg:p-6 space-y-6">
+<!-- Table Control & Filter Masthead -->
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant text-code-tabular font-code-tabular text-xs">
+<div class="flex items-center gap-3">
+<span class="text-outline uppercase tracking-wider font-semibold">Scope: Base-Load Economic Equivalence</span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface-variant">Nuclear (700 MWe PHWR Fleet) vs Supercritical Thermal Coal (800 MWe)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-surface-container text-outline border border-outline-variant">Entailment Threshold: &gt;0.80</span>
+</div>
+</div>
+<!-- ROW 1: Capital Expenditure & Decommissioning Liability -->
+<article class="border border-outline-variant bg-surface-container-lowest p-0">
+<!-- Row Docket Header -->
+<div class="bg-surface-container-low px-4 py-2.5 border-b border-outline-variant flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-primary font-code-tabular text-xs font-semibold" style="color: rgb(251, 191, 36); border: 1px solid rgba(245, 158, 11, 0.4); background-color: rgba(245, 158, 11, 0.1);">VARIABLE 01</span>
+<h2 class="text-label-md font-label-md text-on-surface font-semibold uppercase tracking-wider">
+                Capital Expenditure &amp; Decommissioning Liability
+              </h2>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 border px-2 py-0.5 bg-surface-container-lowest" style="border-color: #d97706;">
+<span class="text-[10px] uppercase font-code-tabular text-outline">Entailment Failure</span>
+<span class="text-xs font-code-tabular font-bold" style="color: #fbbf24;">0.94 δ</span>
+</div>
+<span class="text-label-sm font-label-sm bg-surface px-1.5 py-0.5 border font-semibold" style="color: #fbbf24; border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.1);">SCHISM CRITICAL</span>
+</div>
+</div>
+<!-- Side-by-Side Contested Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+<!-- Side A: Official CEA Filing -->
+<div class="p-4 space-y-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant">
+<span class="text-label-sm font-label-sm text-outline uppercase font-semibold">Side A: Official CEA Ingestion</span>
+<span class="font-code-tabular text-xs text-on-surface-variant">DOC-CEA-2023-VOL4 §11.2</span>
+</div>
+<div class="space-y-1">
+<div class="text-xs text-outline font-code-tabular">CLAIMED QUANTITATIVE METRIC:</div>
+<div class="text-xl font-headline-sm font-bold text-primary">₹15.2 Cr / MWe Overnight Capex</div>
+</div>
+<blockquote class="text-body-md font-body-md text-on-surface italic pl-3 border-l border-outline-variant py-1">
+                “Total pre-commissioning capital outlay for twin 700 MWe indigenized pressurized heavy water reactors stands formalized at ₹21,280 crore inclusive of IDC. Decommissioning liabilities are statutorily deferred post 40-year terminal amortization with sink-fund deposits scheduled in operating year 25.”
+              </blockquote>
+<div class="pt-2 text-[11px] font-code-tabular text-outline flex items-center justify-between">
+<span class="">Audited: CEA System Planning Div</span>
+<span class="text-secondary">Signature: VALIDATED_OFFICIAL</span>
+</div>
+</div>
+<!-- Side B: Independent CEEW & CAG Audit -->
+<div class="p-4 space-y-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant">
+<span class="text-label-sm font-label-sm text-error uppercase font-semibold">Side B: Adversarial Forensic Audit</span>
+<span class="font-code-tabular text-xs text-on-surface-variant">CAG-REPORT-7-2023-ES</span>
+</div>
+<div class="space-y-1">
+<div class="text-xs text-outline font-code-tabular">FORENSIC AUDIT DISCREPANCY:</div>
+<div class="text-xl font-headline-sm font-bold text-error">₹24.8 Cr / MWe Realized Exposure</div>
+</div>
+<blockquote class="text-body-md font-body-md text-on-surface italic pl-3 border-l border-error py-1">
+                “Statutory omission detected: Interim dry-cask storage liabilities and heavy water tritium-scrubbing amortization are categorized off-balance sheet. Accounting for real schedule slippage of 84 months across Gorakhpur 1 &amp; 2 incurs compound IDC escalating overnight base exposure to ₹24.82 Cr/MWe.”
+              </blockquote>
+<div class="pt-2 text-[11px] font-code-tabular text-outline flex items-center justify-between">
+<span class="">Audited: CAG Commercial Wing IV</span>
+<span class="text-error font-semibold">CONTESTED BY OPERATOR</span>
+</div>
+</div>
+</div>
+<!-- Bottom Operational Action Toolbar -->
+<div class="px-4 py-2 bg-surface border-t border-outline-variant flex flex-wrap items-center justify-between gap-3 text-xs font-code-tabular">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="">Timestamp: 2024-10-18T04:19:02Z</span>
+<span class="text-outline-variant">|</span>
+<span class="">Discrepancy Delta: <strong class="text-error">+63.1%</strong></span>
+<span class="text-outline-variant">|</span>
+<span class="">NLI Type: Direct Contradiction</span>
+</div>
+<button class="bg-surface-container text-primary hover:bg-surface-container-high border border-outline px-3 py-1 font-label-md text-xs uppercase tracking-wider flex items-center gap-1.5 transition-none cursor-pointer">
+<span class="material-symbols-outlined text-sm text-primary">account_tree</span>
+              Invoke Dual-Model Cross-Examination
+            </button>
+</div>
+</article>
+<!-- ROW 2: Heavy Water Inventory Valuation -->
+<article class="border border-outline-variant bg-surface-container-lowest p-0">
+<div class="bg-surface-container-low px-4 py-2.5 border-b border-outline-variant flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-primary font-code-tabular text-xs font-semibold" style="color: rgb(251, 191, 36); border: 1px solid rgba(245, 158, 11, 0.4); background-color: rgba(245, 158, 11, 0.1);">VARIABLE 02</span>
+<h2 class="text-label-md font-label-md text-on-surface font-semibold uppercase tracking-wider">
+                Heavy Water Inventory (D₂O) Valuation &amp; Degradation
+              </h2>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 border border-outline px-2 py-0.5 bg-surface-container-lowest">
+<span class="text-[10px] uppercase font-code-tabular text-outline">Entailment Failure</span>
+<span class="text-xs font-code-tabular font-bold text-primary">0.88 δ</span>
+</div>
+<span class="text-label-sm font-label-sm px-1.5 py-0.5 border font-semibold" style="color: rgb(251, 191, 36); border-color: rgb(245, 158, 11); background-color: rgba(245, 158, 11, 0.1);">ACCOUNTING FRICTION</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+<!-- Side A -->
+<div class="p-4 space-y-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant">
+<span class="text-label-sm font-label-sm text-outline uppercase font-semibold">Side A: DAE Balance Ledger</span>
+<span class="font-code-tabular text-xs text-on-surface-variant">DAE-FIN-2022-ANNEX-C</span>
+</div>
+<div class="space-y-1">
+<div class="text-xs text-outline font-code-tabular">BALANCE SHEET RECOGNITION:</div>
+<div class="text-xl font-headline-sm font-bold text-primary">Zero Real Physical Depreciation</div>
+</div>
+<blockquote class="text-body-md font-body-md text-on-surface italic pl-3 border-l border-outline-variant py-1">
+                “Primary coolant and moderator D₂O inventory of 540 metric tonnes per 700 MW unit is retained on corporate books as a non-depreciating perpetual physical asset at historical procurement rates, given isotopic reprocessing recovery cycles.”
+              </blockquote>
+<div class="pt-2 text-[11px] font-code-tabular text-outline flex items-center justify-between">
+<span class="">Source: Heavy Water Board Audit</span>
+<span class="text-secondary">METHOD: PERPETUAL_ASSET</span>
+</div>
+</div>
+<!-- Side B -->
+<div class="p-4 space-y-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant">
+<span class="text-label-sm font-label-sm text-error uppercase font-semibold">Side B: Statutory Standard AS-16 Audit</span>
+<span class="font-code-tabular text-xs text-on-surface-variant">ICAI-STAT-DISCLOSURE-2023</span>
+</div>
+<div class="space-y-1">
+<div class="text-xs text-outline font-code-tabular">STATUTORY STANDARD RULING:</div>
+<div class="text-xl font-headline-sm font-bold text-error">Indian AS-16 Violation / Annual Impairment</div>
+</div>
+<blockquote class="text-body-md font-body-md text-on-surface italic pl-3 border-l border-error py-1">
+                “Tritium contamination, systemic leak-rates of 0.75% per annum, and isotopic downgrade mandate treatment as a consuming operating inventory or asset subject to aggressive linear impairment under Ind AS-16 and Ind AS-37 decommissioning contingencies.”
+              </blockquote>
+<div class="pt-2 text-[11px] font-code-tabular text-outline flex items-center justify-between">
+<span class="">Authority: Statutory Chartered Registry</span>
+<span class="text-error font-semibold">UNRECONCILED DISPUTE</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-2 bg-surface border-t border-outline-variant flex flex-wrap items-center justify-between gap-3 text-xs font-code-tabular">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="">Timestamp: 2024-10-18T04:22:11Z</span>
+<span class="text-outline-variant">|</span>
+<span class="">Statutory Breach: <strong class="text-primary">Ind AS-16 / Ind AS-37</strong></span>
+<span class="text-outline-variant">|</span>
+<span class="">Classification: Regulatory Schism</span>
+</div>
+<button class="bg-surface-container text-primary hover:bg-surface-container-high border border-outline px-3 py-1 font-label-md text-xs uppercase tracking-wider flex items-center gap-1.5 transition-none cursor-pointer">
+<span class="material-symbols-outlined text-sm text-primary">account_tree</span>
+              Invoke Dual-Model Cross-Examination
+            </button>
+</div>
+</article>
+<!-- ROW 3: Plant Load Factor (PLF) Stability -->
+<article class="border border-outline-variant bg-surface-container-lowest p-0">
+<div class="bg-surface-container-low px-4 py-2.5 border-b border-outline-variant flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 bg-surface-container-highest text-primary font-code-tabular text-xs font-semibold" style="color: rgb(251, 191, 36); border: 1px solid rgba(245, 158, 11, 0.4); background-color: rgba(245, 158, 11, 0.1);">VARIABLE 03</span>
+<h2 class="text-label-md font-label-md text-on-surface font-semibold uppercase tracking-wider">
+                Plant Load Factor (PLF) Baseline &amp; Fuel Continuity
+              </h2>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 border border-outline px-2 py-0.5 bg-surface-container-lowest">
+<span class="text-[10px] uppercase font-code-tabular text-outline">Entailment Failure</span>
+<span class="text-xs font-code-tabular font-bold text-primary">0.91 δ</span>
+</div>
+<span class="text-label-sm font-label-sm text-error bg-surface px-1.5 py-0.5 border border-error">EMPIRICAL BREACH</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+<!-- Side A -->
+<div class="p-4 space-y-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant">
+<span class="text-label-sm font-label-sm text-outline uppercase font-semibold">Side A: CERC Baseline Filing</span>
+<span class="font-code-tabular text-xs text-on-surface-variant">TARIFF-PETITION-CERC-412</span>
+</div>
+<div class="space-y-1">
+<div class="text-xs text-outline font-code-tabular">NORMATIVE TARIFF ASSUMPTION:</div>
+<div class="text-xl font-headline-sm font-bold text-primary">87.4% Firm Baseload Availability</div>
+</div>
+<blockquote class="text-body-md font-body-md text-on-surface italic pl-3 border-l border-outline-variant py-1">
+                “Normative operation criteria calculated at continuous 85-88% PLF assuming bilateral domestic fuel allocation quotas from Jaduguda/Tummalapalle milling complexes under sovereign priority transport protocols.”
+              </blockquote>
+<div class="pt-2 text-[11px] font-code-tabular text-outline flex items-center justify-between">
+<span class="">Submitted: National Power Corp</span>
+<span class="text-secondary">BASIS: NORMATIVE_BENCHMARK</span>
+</div>
+</div>
+<!-- Side B -->
+<div class="p-4 space-y-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant">
+<span class="text-label-sm font-label-sm text-error uppercase font-semibold">Side B: Grid Dispatch Realization Ledger</span>
+<span class="font-code-tabular text-xs text-on-surface-variant">POSOCO-DISPATCH-ARCHIVE-5YR</span>
+</div>
+<div class="space-y-1">
+<div class="text-xs text-outline font-code-tabular">ACTUAL REVENUE REALIZATION:</div>
+<div class="text-xl font-headline-sm font-bold text-error">62.1% Net Realized 5-Year Mean</div>
+</div>
+<blockquote class="text-body-md font-body-md text-on-surface italic pl-3 border-l border-error py-1">
+                “Five-year empirical telemetric dispatch verifies fleet median PLF of 62.14% driven by unhedged domestic yellowcake supply deficits, extended biennial surveillance outages, and steam-generator piping tube pluggings at Kakrapar and Kaiga.”
+              </blockquote>
+<div class="pt-2 text-[11px] font-code-tabular text-outline flex items-center justify-between">
+<span class="">Source: National Load Despatch Centre</span>
+<span class="text-error font-semibold">MEASURED EMPIRICAL REALITY</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-2 bg-surface border-t border-outline-variant flex flex-wrap items-center justify-between gap-3 text-xs font-code-tabular">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="">Timestamp: 2024-10-18T04:26:48Z</span>
+<span class="text-outline-variant">|</span>
+<span class="">Capacity Variance: <strong class="text-error">-25.3% Net Factor</strong></span>
+<span class="text-outline-variant">|</span>
+<span class="">Levelized Cost Shock: +₹1.84/kWh</span>
+</div>
+<button class="bg-surface-container text-primary hover:bg-surface-container-high border border-outline px-3 py-1 font-label-md text-xs uppercase tracking-wider flex items-center gap-1.5 transition-none cursor-pointer">
+<span class="material-symbols-outlined text-sm text-primary">account_tree</span>
+              Invoke Dual-Model Cross-Examination
+            </button>
+</div>
+</article>
+<!-- Methodological Footnote Dossier Record -->
+<div class="border border-outline-variant p-3.5 bg-surface text-code-tabular text-xs space-y-1">
+<div class="text-outline uppercase font-semibold text-[10px]">EVIDENTIARY PROTOCOL NOTICE</div>
+<p class="text-on-surface-variant leading-relaxed">
+            All cross-examinations adhere to Natural Language Inference (NLI) Premise-Hypothesis pair scoring under strict declassified air-gap configurations. Direct mathematical entailment failure (&gt;0.85 δ) represents a non-negotiable legal dispute triggering mandatory evidentiary escrow before sovereign infrastructure guarantees are released.
+          </p>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- RIGHT COLUMN: Epistemic Discrepancy Trail & NLI Logic Ledger (Cols 9-12)-->
+<!-- ===================================================================== -->
+<aside class="lg:col-span-4 p-4 lg:p-6 bg-surface-container-lowest space-y-6">
+<!-- Header for Discrepancy Trail -->
+<div class="border-b border-outline-variant pb-3 flex items-center justify-between">
+<div>
+<h3 class="text-label-md font-label-md uppercase font-semibold text-on-surface tracking-wider">
+              Epistemic Discrepancy Trail
+            </h3>
+<p class="text-xs font-code-tabular text-outline">Qwen 2.5 14B Auditor // Node Handoff Stream</p>
+</div>
+<span class="material-symbols-outlined text-outline">history_edu</span>
+</div>
+<!-- Chronological Textual Log / Terminal Trail -->
+<div class="space-y-4 font-code-tabular text-xs">
+<!-- Handoff 01 -->
+<div class="border-l-2 border-primary-container pl-3 py-1 space-y-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-primary font-bold">NODE_08_QWEN_14B_DISPATCH</span>
+<span class="text-outline">04:19:02.104Z</span>
+</div>
+<p class="text-on-surface leading-normal">
+              Contradiction pair flagged on token sequence <span class="text-primary bg-surface-container px-1">[₹15.2 Cr]</span> vs <span class="text-error bg-surface-container px-1">[₹24.8 Cr]</span>. Premise entailment score returned: <strong class="text-error">0.03 (Strict Contradiction)</strong>.
+            </p>
+<div class="text-[10px] text-outline-variant bg-surface p-1.5 border border-outline-variant">
+              Premise 1: "Decommissioning liabilities are statutorily deferred..."<br>
+              Hypothesis: "Current Overnight Capex captures lifecycle remediation liabilities."<br>
+<span class="text-error font-semibold">PROOF REJECTED: Omission detected under CAG Commercial Audit rules.</span>
+</div>
+</div>
+<!-- Handoff 02 -->
+<div class="border-l-2 border-outline pl-3 py-1 space-y-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-outline font-bold">NODE_03_STATUTORY_GRAPH</span>
+<span class="text-outline">04:21:49.882Z</span>
+</div>
+<p class="text-on-surface leading-normal">
+              Queried Central Electricity Regulatory Commission Tariff Petition 2019-24 database. Cross-linked with Indian Accounting Standard 16.
+            </p>
+<div class="text-[10px] text-on-surface-variant bg-surface p-1.5 border border-outline-variant">
+              STATUS: Lexical schism verified. Operator defines D₂O as non-consumptive matrix. Auditor classifies D₂O as impaired industrial catalyst.
+            </div>
+</div>
+<!-- Handoff 03 -->
+<div class="border-l-2 border-primary-container pl-3 py-1 space-y-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-primary font-bold">NODE_11_POSOCO_TELEMETRY</span>
+<span class="text-outline">04:26:48.003Z</span>
+</div>
+<p class="text-on-surface leading-normal">
+              NLI Entailment Assertion: "87.4% Normative PLF entails 87.4% dispatch reliability."<br>
+<strong class="text-error">ENTAILMENT FAILED: Delta = -25.30%</strong>. Historical SCADA logs from Northern Regional Load Despatch Centre indicate chronic fuel throttling.
+            </p>
+<div class="text-[10px] text-outline-variant bg-surface p-1.5 border border-outline-variant">
+              Calculated LCOE Impact: ₹4.88/kWh (Baseline Claim) → Realized ₹6.72/kWh under audited 62.1% utilization.
+            </div>
+</div>
+<!-- Handoff 04 -->
+<div class="border-l-2 border-secondary pl-3 py-1 space-y-1.5">
+<div class="flex items-center justify-between text-[11px]">
+<span class="text-secondary font-bold">NODE_00_EPISTEMIC_ESCROW</span>
+<span class="text-outline">04:30:11.912Z</span>
+</div>
+<p class="text-on-surface leading-normal">
+              Locking Dossier REF-09482-ARCH state to <span class="text-error font-bold">CONTESTED</span>. Zero egress transmission maintained. Ready for manual judicial cross-examination.
+            </p>
+</div>
+</div>
+<!-- Discrepancy Classification Ledger Stamp -->
+<div class="border border-outline-variant bg-surface p-4 space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm uppercase font-semibold text-outline">EVIDENTIARY DISCREPANCY SCORECARD</span>
+<span class="text-xs font-code-tabular text-primary">AUDIT COMPLIANT</span>
+</div>
+<div class="space-y-2 text-xs font-code-tabular">
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Claims Audited</span>
+<span class="text-on-surface font-bold">142 Declarations</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Direct Contradictions</span>
+<span class="text-error font-bold">19 Hard Schisms</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Methodological Omissions</span>
+<span class="text-primary font-bold" style="color: rgb(251, 191, 36);">34 Parameters</span>
+</div>
+<div class="flex justify-between py-1 border-b border-outline-variant">
+<span class="text-on-surface-variant">Statutory Harmonization Rate</span>
+<span class="text-secondary font-bold">44.2% Corroborated</span>
+</div>
+</div>
+<!-- Archival Verification Stamp Component -->
+<div class="mt-4 border p-2.5 bg-surface-container-low flex items-center gap-3" style="border-color: rgb(217, 119, 6); background-color: rgba(245, 158, 11, 0.05);">
+<span class="material-symbols-outlined text-2xl" style="color: #f59e0b;">shield</span>
+<div class="font-code-tabular text-[10px] leading-tight">
+<div class="font-bold tracking-wider uppercase" style="color: #fbbf24;">HOSTILE CORROBORATION LOCK</div>
+<div class="text-on-surface-variant">SIGNATURE: 0x9482F...E82B14</div>
+<div class="text-outline">ARCHIVAL INTEGRITY VERIFIED: NO DATA LOSS</div>
+</div>
+</div>
+</div>
+<!-- Terminal Quick Action Box -->
+<div class="border border-outline-variant p-3 bg-surface space-y-2">
+<label class="block text-[11px] font-code-tabular uppercase tracking-wider text-outline">
+            Adversarial Query Console
+          </label>
+<div class="flex">
+<input class="flex-1 bg-surface-container-lowest border border-outline-variant text-on-surface font-code-tabular text-xs px-2.5 py-1.5 focus:border-outline focus:ring-0 focus:outline-none" readonly="" type="text" value="PROBE_ENTAILMENT --pair=ROW1 --model=deepseek-r1:14b">
+<button class="bg-surface-container-high hover:bg-surface-variant text-primary border border-outline-variant border-l-0 px-3 font-code-tabular text-xs transition-none cursor-pointer">
+              RUN
+            </button>
+</div>
+<div class="text-[10px] font-code-tabular text-outline">
+            Type statutory query or pair-ID to trigger deterministic NLI verification pass.
+          </div>
+</div>
+</aside>
+</main>
+<!-- ======================================================================= -->
+<!-- BROADSHEET STATUSBAR / FOOTER STRIP                                     -->
+<!-- ======================================================================= -->
+<footer class="bg-surface border-t border-outline-variant px-4 lg:px-6 py-2 flex flex-wrap items-center justify-between gap-4 text-xs font-code-tabular text-on-surface-variant">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5">
+<span class="inline-block w-2 h-2 bg-secondary"></span>
+<span class="">EP-ENGINE: ONLINE</span>
+</span>
+<span class="hidden sm:inline-block text-outline-variant">|</span>
+<span class="hidden sm:inline-block">HASH: 9c41f92e02aa11e8a4a2</span>
+<span class="hidden md:inline-block text-outline-variant">|</span>
+<span class="hidden md:inline-block">INGEST BATCH: 2024-10-18-INDIA-ENERGY-CEA</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="">SESSION: ISOLATED_SOVEREIGN</span>
+<span class="text-outline-variant">|</span>
+<span class="text-primary">ZERO EXTERNAL EGRESS</span>
+</div>
+</footer>
+</div>
+
+
+</body></html>

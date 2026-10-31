@@ -1,83 +1,121 @@
 "use client";
 
 import React from "react";
-import { Cpu, ShieldCheck, History, FileUp, Sparkles, CheckCircle2 } from "lucide-react";
+import { Lock, FileUp, History, Plus, Menu, Terminal, Shield, GraduationCap } from "lucide-react";
 
 interface HeaderProps {
   onOpenHistory: () => void;
   onOpenDocuments: () => void;
+  onNewResearch?: () => void;
+  onOpenPaperStudio?: () => void;
+  onToggleMobileMenu?: () => void;
+  activeSessionId?: string | null;
+  mode?: string;
   backendHealth: {
-    status: string;
+    status?: string;
     ollama?: { connected: boolean; model: string };
-    cost: string;
+    cost?: string;
   } | null;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenHistory, onOpenDocuments, backendHealth }) => {
-  const isHealthy = backendHealth?.status === "healthy";
+export const Header: React.FC<HeaderProps> = ({
+  onOpenHistory,
+  onOpenDocuments,
+  onNewResearch,
+  onOpenPaperStudio,
+  onToggleMobileMenu,
+  activeSessionId,
+  mode,
+  backendHealth,
+}) => {
   const modelName = backendHealth?.ollama?.model || "qwen3.5:latest";
+  const dossierId = activeSessionId ? `REF-${activeSessionId.slice(0, 8).toUpperCase()}` : "REF-ACTIVE-01";
+  const modeDisplay = mode
+    ? mode === "deep"
+      ? "Deep Archival"
+      : mode === "quick"
+      ? "Rapid Synthesis"
+      : "Corpus Parsing"
+    : "Statutory Corroboration";
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#07090e]/80 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo & Brand */}
-        <div className="flex items-center space-x-3">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-[1px]">
-            <div className="w-full h-full bg-[#0a0f1d] rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-cyan-400" />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                Research<span className="text-cyan-400">Forge</span>
-              </span>
-              <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-cyan-950/60 text-cyan-300 border border-cyan-800/40">
-                v1.0 MVP
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 hidden sm:block">
-              Local Multi-Agent Research Assistant
-            </p>
-          </div>
+    <header className="fixed top-0 left-0 w-full z-30 md:pl-72 bg-[#101319] border-b border-[#222735]">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 h-12">
+        {/* Left: Mobile Toggle & Telemetry Ribbon */}
+        <div className="flex items-center gap-3 overflow-x-auto py-1 text-xs font-mono">
+          {/* Mobile hamburger button */}
+          <button
+            onClick={onToggleMobileMenu}
+            className="md:hidden p-1 text-[#dbc2b0] hover:text-[#e1e2eb] border border-[#222735] bg-[#0b0e14]"
+            aria-label="Open docket menu"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+
+          {/* Dossier Code */}
+          <span className="text-[#4edea3] tracking-wider uppercase flex items-center gap-1.5 shrink-0">
+            <span className="inline-block w-1.5 h-1.5 bg-[#4edea3]"></span>
+            <span>Dossier: {dossierId}</span>
+          </span>
+
+          {/* Mode telemetry */}
+          <span className="text-[#dbc2b0] border-l border-[#222735] pl-3 hidden sm:inline shrink-0">
+            Mode: {modeDisplay}
+          </span>
+
+          {/* Latency & Zero Cost */}
+          <span className="text-[#a38c7c] border-l border-[#222735] pl-3 hidden lg:inline shrink-0">
+            Audit Footprint: ₹0 / Offline
+          </span>
         </div>
 
-        {/* System Badges & Telemetry */}
-        <div className="hidden md:flex items-center space-x-3 text-xs">
-          {/* Local LLM Badge */}
-          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-800">
-            <Cpu className="w-4 h-4 text-purple-400" />
-            <span className="text-slate-400">Model:</span>
-            <span className="font-mono text-purple-300 font-medium">{modelName}</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
+        {/* Right: Action Cluster */}
+        <div className="flex items-center gap-2 font-mono text-xs">
+          {onNewResearch && (
+            <button
+              onClick={onNewResearch}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#191c22] border border-[#222735] hover:border-[#a38c7c] text-[#e1e2eb] transition-none cursor-pointer"
+              title="New Research Query"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#ffb77d]" />
+              <span className="hidden sm:inline">New Query</span>
+            </button>
+          )}
 
-          {/* Zero Cost Badge */}
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 font-medium">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Cost: ₹0 (Local AI)</span>
-          </div>
-        </div>
+          {onOpenPaperStudio && (
+            <button
+              onClick={onOpenPaperStudio}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#191c22] border border-[#ffb77d]/40 hover:border-[#ffb77d] text-[#ffb77d] transition-none cursor-pointer"
+              title="AI Research Paper Generator Studio"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-[#ffb77d]" />
+              <span className="hidden sm:inline">Paper Studio</span>
+            </button>
+          )}
 
-        {/* Actions */}
-        <div className="flex items-center space-x-2">
           <button
             onClick={onOpenDocuments}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition text-xs font-medium"
-            title="Upload PDF/DOCX for Document Research"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#191c22] border border-[#222735] hover:border-[#a38c7c] text-[#e1e2eb] transition-none cursor-pointer"
+            title="Upload Document into Ingestion Corpus"
           >
-            <FileUp className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Upload Doc</span>
+            <FileUp className="w-3.5 h-3.5 text-[#ffb77d]" />
+            <span className="hidden md:inline">Ingest Corpus</span>
           </button>
 
           <button
             onClick={onOpenHistory}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 transition text-xs font-medium"
-            title="View Research History"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#191c22] border border-[#222735] hover:border-[#a38c7c] text-[#e1e2eb] transition-none cursor-pointer"
+            title="Open Historical Docket Archive"
           >
-            <History className="w-3.5 h-3.5 text-purple-400" />
-            <span className="hidden sm:inline">History</span>
+            <History className="w-3.5 h-3.5 text-[#b9c8de]" />
+            <span className="hidden md:inline">Archive</span>
           </button>
+
+          {/* Archival Seal Marker */}
+          <div className="border-l border-[#222735] pl-2.5 ml-1 flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-[#a38c7c]" />
+            <span className="text-[11px] text-[#a38c7c] hidden xl:inline">SEAL: CAO-098</span>
+          </div>
         </div>
       </div>
     </header>

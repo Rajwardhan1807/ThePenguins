@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ResearchForge — System Engine Architecture &amp; Telemetry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#dbc2b0",
+            "tertiary-fixed": "#d4e4fa",
+            "on-tertiary-container": "#1c2b3c",
+            "on-background": "#e1e2eb",
+            "secondary-container": "#00a572",
+            "on-secondary": "#003824",
+            "surface-variant": "#32353c",
+            "inverse-surface": "#e1e2eb",
+            "secondary-fixed": "#6ffbbe",
+            "on-surface": "#e1e2eb",
+            "surface-container": "#1d2026",
+            "on-tertiary-fixed-variant": "#39485a",
+            "surface-container-low": "#191c22",
+            "primary": "#ffb77d",
+            "on-secondary-fixed": "#002113",
+            "tertiary": "#b9c8de",
+            "on-secondary-container": "#00311f",
+            "inverse-primary": "#904d00",
+            "tertiary-fixed-dim": "#b9c8de",
+            "on-primary": "#4d2600",
+            "inverse-on-surface": "#2e3037",
+            "on-error": "#690005",
+            "on-secondary-fixed-variant": "#005236",
+            "surface-container-lowest": "#0b0e14",
+            "background": "#101319",
+            "on-error-container": "#ffdad6",
+            "surface-tint": "#ffb77d",
+            "outline-variant": "#554336",
+            "surface-dim": "#101319",
+            "surface-container-highest": "#32353c",
+            "secondary": "#4edea3",
+            "on-primary-container": "#432100",
+            "error": "#ffb4ab",
+            "secondary-fixed-dim": "#4edea3",
+            "on-tertiary": "#233143",
+            "surface-bright": "#363940",
+            "primary-fixed": "#ffdcc3",
+            "error-container": "#93000a",
+            "on-primary-fixed": "#2f1500",
+            "outline": "#a38c7c",
+            "tertiary-container": "#8392a6",
+            "primary-container": "#d97707",
+            "on-tertiary-fixed": "#0d1c2d",
+            "surface": "#101319",
+            "surface-container-high": "#272a31",
+            "primary-fixed-dim": "#ffb77d",
+            "on-primary-fixed-variant": "#6e3900"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "0px",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.5rem",
+            "margin": "1.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Newsreader"],
+            "code-tabular": ["Inter"],
+            "headline-md": ["Newsreader"],
+            "label-md": ["Inter"],
+            "headline-xl-mobile": ["Newsreader"],
+            "label-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Newsreader"],
+            "headline-xl": ["Newsreader"],
+            "headline-lg": ["Newsreader"],
+            "body-md": ["Inter"],
+            "headline-lg-mobile": ["Newsreader"]
+          },
+          "fontSize": {
+            "headline-sm": ["1.25rem", { "lineHeight": "1.625rem", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "code-tabular": ["0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "headline-md": ["1.75rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.015em", "fontWeight": "500" }],
+            "label-md": ["0.8125rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-xl-mobile": ["2.25rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.08em", "fontWeight": "600" }],
+            "body-sm": ["0.8125rem", { "lineHeight": "1.25rem", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-xl": ["3.5rem", { "lineHeight": "3.75rem", "letterSpacing": "-0.03em", "fontWeight": "400" }],
+            "headline-lg": ["2.5rem", { "lineHeight": "2.75rem", "letterSpacing": "-0.025em", "fontWeight": "400" }],
+            "body-md": ["0.9375rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.75rem", { "lineHeight": "2.125rem", "letterSpacing": "-0.015em", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.125rem;
+      line-height: 1;
+    }
+    /* Monastic Brutalist scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0e14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #554336;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a38c7c;
+    }
+    * {
+      border-radius: 0px !important;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
+<!-- ==================== SHARED COMPONENT: SideNavBar ==================== -->
+<aside class="fixed top-0 left-0 h-screen w-72 bg-surface-container-lowest border-r border-outline-variant z-40 hidden md:block">
+<div class="flex flex-col justify-between h-full p-4 border-r border-outline-variant">
+<!-- Masthead Anchor -->
+<div class="space-y-6">
+<div class="pb-4 border-b border-outline-variant">
+<div class="flex items-center justify-between mb-1">
+<span class="text-headline-md font-headline-md italic text-primary tracking-tight">ResearchForge</span>
+<span class="material-symbols-outlined text-outline text-sm" data-icon="lock">lock</span>
+</div>
+<p class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant opacity-75">Autonomous Evidentiary Terminal</p>
+<div class="mt-2 text-[10px] font-code-tabular text-code-tabular text-outline tracking-tight">ARCHIVAL PROTOCOL v4.11-SEC</div>
+</div>
+<!-- Primary Navigational Docket -->
+<nav aria-label="Docket Tabs" class="space-y-0.5">
+<!-- 01. Current Briefing -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="article">article</span>
+<span>Current Briefing</span>
+</a>
+<!-- 02. Primary Source Registry -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span>Primary Source Registry</span>
+</a>
+<!-- 03. Contradiction Matrix -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+<span>Contradiction Matrix</span>
+</a>
+<!-- 04. Adversarial Scrape Trees -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span>Adversarial Scrape Trees</span>
+</a>
+<!-- 05. Epistemic Ledger -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span>Epistemic Ledger</span>
+</a>
+<!-- 06. Corpus Discrepancies -->
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="rule">rule</span>
+<span>Corpus Discrepancies</span>
+</a>
+<!-- 07. System Parameters (ACTIVE: Matching Page Intent) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-surface-container text-primary border-l-2 border-primary font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+<span>System Parameters</span>
+</a>
+</nav>
+</div>
+<!-- Footer Isolation Status & Operative CTA -->
+<div class="space-y-4 pt-4 border-t border-outline-variant">
+<div class="space-y-1.5 font-code-tabular text-code-tabular text-[11px] text-on-surface-variant">
+<div class="flex items-center justify-between py-0.5">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="memory">memory</span>
+              Model Weights: Isolated
+            </span>
+<span class="text-secondary font-medium">100%</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="security">security</span>
+              Network: 0 B Out
+            </span>
+<span class="text-secondary font-medium">LOCKED</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="event">event</span>
+              Cutoff: 2024-Q4
+            </span>
+<span class="text-outline">OFFLINE</span>
+</div>
+</div>
+<button class="w-full bg-primary-container hover:bg-primary text-on-primary-container font-label-md text-label-md py-2 px-3 text-center transition-none uppercase tracking-wider font-semibold">
+          Execute Epistemic Audit
+        </button>
+</div>
+</div>
+</aside>
+<!-- ==================== SHARED COMPONENT: TopNavBar ==================== -->
+<header class="w-full bg-surface border-b border-outline-variant fixed top-0 left-0 z-30 md:pl-72">
+<div class="flex items-center justify-between px-6 py-2.5">
+<!-- Breadcrumb & Mode Telemetry (Preserving Case Integrity) -->
+<div class="flex items-center gap-6 overflow-x-auto py-1">
+<span class="text-secondary font-code-tabular text-code-tabular tracking-wider uppercase flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 bg-secondary"></span>
+          Dossier: REF-09482-ARCH
+        </span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular border-l border-outline-variant pl-4">
+          Mode: Statutory Corroboration
+        </span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular border-l border-outline-variant pl-4">
+          Tolerance: 0.002δ
+        </span>
+<span class="text-on-surface-variant font-code-tabular text-code-tabular border-l border-outline-variant pl-4 hidden sm:inline">
+          Latency: 14ms
+        </span>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-3">
+<button class="hidden lg:inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-lowest border border-outline-variant hover:border-outline text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-sm" data-icon="sync">sync</span>
+          Re-Index Corpus
+        </button>
+<button class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-lowest border border-outline-variant hover:border-outline text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+          Export Ledger
+        </button>
+<div class="border-l border-outline-variant pl-3 ml-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-base" data-icon="lock">lock</span>
+<span class="font-code-tabular text-xs text-outline hidden md:inline">SEAL: CAO-098</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ==================== MAIN EDITORIAL CANVAS ==================== -->
+<main class="md:pl-72 pt-12 min-h-screen bg-background">
+<!-- Top Diagnostic Telemetry Strip (Solemn, Flat, High-Density) -->
+<section class="bg-surface-container-lowest border-b border-outline-variant px-6 py-3">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-2 gap-x-4 font-code-tabular text-code-tabular text-xs">
+<div class="space-y-0.5">
+<span class="text-outline uppercase text-[10px] tracking-wider block">Runtime Environment</span>
+<span class="text-on-surface font-medium">Apple Metal M3 Max</span>
+</div>
+<div class="space-y-0.5">
+<span class="text-outline uppercase text-[10px] tracking-wider block">Isolated Architecture</span>
+<span class="text-primary font-medium truncate block">Qwen 2.5 14B Q4_K_M</span>
+</div>
+<div class="space-y-0.5">
+<span class="text-outline uppercase text-[10px] tracking-wider block">Local VRAM / Physical</span>
+<span class="text-on-surface">11.4 GB / 16 GB (Unified)</span>
+</div>
+<div class="space-y-0.5">
+<span class="text-outline uppercase text-[10px] tracking-wider block">Cloud Outbound Socket</span>
+<span class="text-secondary font-medium">0 B (Strictly Air-gapped)</span>
+</div>
+<div class="space-y-0.5">
+<span class="text-outline uppercase text-[10px] tracking-wider block">Active Swarm Threads</span>
+<span class="text-on-surface font-medium">8 Cores Locked [pthreads]</span>
+</div>
+<div class="space-y-0.5">
+<span class="text-outline uppercase text-[10px] tracking-wider block">Epistemic State</span>
+<span class="text-secondary uppercase">Statutory Nominal</span>
+</div>
+</div>
+</section>
+<!-- Page Header & Sovereign Masthead -->
+<div class="px-6 py-6 border-b border-outline-variant bg-surface">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[11px] font-code-tabular text-outline uppercase tracking-widest">Diagnostic Docket // Sub-System 0x07</span>
+<span class="text-outline">/</span>
+<span class="text-[11px] font-code-tabular text-secondary uppercase tracking-widest">Zero-Exfiltration Validated</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface italic font-normal tracking-tight">
+            Engine Architecture &amp; Epistemic Runtime Topology
+          </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl mt-1">
+            Deterministic state machine supervising the automated contradiction audit, vector provenance graph, and low-latency POSIX thread matrix for Dossier REF-09482-ARCH.
+          </p>
+</div>
+<!-- Archival Verification Stamp -->
+<div class="border border-secondary/60 bg-surface-container-lowest px-4 py-2 self-start md:self-auto shrink-0">
+<div class="flex items-center gap-2 font-code-tabular text-xs text-secondary tracking-widest uppercase font-semibold">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+            Statutory Seal: 0x9AF8-D
+          </div>
+<div class="text-[10px] font-code-tabular text-outline mt-0.5">SHA-256 PARITY VERIFIED // 0.0000 DRIFT</div>
+</div>
+</div>
+</div>
+<!-- Asymmetrical Grid Canvas (30% Engine Topology / 70% Execution & Telemetry) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 border-b border-outline-variant">
+<!-- ==================== SECTION 1: Sequential Pipeline Topology (Linear DAG) ==================== -->
+<section class="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-outline-variant bg-surface-container-lowest flex flex-col">
+<div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="account_tree">account_tree</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface italic">Sequential Pipeline Topology</h2>
+</div>
+<span class="font-code-tabular text-[11px] text-outline uppercase">DAG Mode: Acyclic Strict</span>
+</div>
+<div class="divide-y divide-outline-variant flex-1">
+<!-- Node 01: Completed -->
+<div class="p-6 hover:bg-surface-container-low transition-none">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-tabular text-xs text-outline">NODE // 01</span>
+<span class="text-xs px-2 py-0.5 border border-secondary text-secondary bg-secondary/10 font-code-tabular font-medium uppercase">Completed</span>
+</div>
+<span class="font-code-tabular text-xs text-on-surface-variant">T_EXEC: 1.24s</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Thesis Decomposer &amp; Proposition Disambiguation</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+              Partitioning complex epistemic claims into atomized assertions. Canonical AST parsed with 16 distinct propositional predicates.
+            </p>
+<div class="grid grid-cols-3 gap-2 border-t border-outline-variant pt-3 font-code-tabular text-[11px] text-outline">
+<div>AST Depth: <span class="text-on-surface">4 levels</span></div>
+<div>Sub-claims: <span class="text-on-surface">19 items</span></div>
+<div>Loss: <span class="text-on-surface">0.00018</span></div>
+</div>
+</div>
+<!-- Node 02: Completed -->
+<div class="p-6 hover:bg-surface-container-low transition-none">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-tabular text-xs text-outline">NODE // 02</span>
+<span class="text-xs px-2 py-0.5 border border-secondary text-secondary bg-secondary/10 font-code-tabular font-medium uppercase">Completed</span>
+</div>
+<span class="font-code-tabular text-xs text-on-surface-variant">42 Sources Ingested</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">ArXiv &amp; DuckDuckGo Primary Scraper</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+              Adversarial scrape across pre-verified statutory repositories. Epistemic hashes registered locally; outbound payload zeroed.
+            </p>
+<div class="grid grid-cols-3 gap-2 border-t border-outline-variant pt-3 font-code-tabular text-[11px] text-outline">
+<div>Corpus Size: <span class="text-on-surface">3.8 MB Raw</span></div>
+<div>Filtered: <span class="text-on-surface">100% Text</span></div>
+<div>HTTP Yield: <span class="text-on-surface">200 OK</span></div>
+</div>
+</div>
+<!-- Node 03: Active (Contested / Friction Style) -->
+<div class="p-6 bg-surface-container border-l-2 border-primary hover:bg-surface-container-high transition-none">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-tabular text-xs text-primary">NODE // 03</span>
+<span class="text-xs px-2 py-0.5 border border-primary-container text-primary bg-primary-container/10 font-code-tabular font-medium uppercase">Active Processing</span>
+</div>
+<span class="font-code-tabular text-xs text-primary font-medium">38 Pairs Analyzing</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Hostile NLI Contradiction Auditor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+              Iterative cross-encoder testing every pair for bidirectional entailment friction. Flagging dialectical divergence across legal briefs.
+            </p>
+<div class="space-y-2 border-t border-outline-variant pt-3">
+<div class="flex justify-between font-code-tabular text-[11px]">
+<span class="text-outline">Entailment Tensor Pass</span>
+<span class="text-primary font-medium">Pair 27 / 38 (71.0%)</span>
+</div>
+<!-- Structural flat progress line, no gradients -->
+<div class="w-full bg-surface-container-lowest h-1 border border-outline-variant">
+<div class="bg-primary h-full" style="width: 71%"></div>
+</div>
+<div class="flex justify-between font-code-tabular text-[10px] text-outline">
+<span>Kernel: Metal-Accelerated FP16</span>
+<span>Friction Detected: 4 Critical</span>
+</div>
+</div>
+</div>
+<!-- Node 04: Awaiting -->
+<div class="p-6 hover:bg-surface-container-low transition-none opacity-60">
+<div class="flex items-start justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-tabular text-xs text-outline">NODE // 04</span>
+<span class="text-xs px-2 py-0.5 border border-outline-variant text-outline bg-surface-container-low font-code-tabular uppercase">Awaiting Node 03</span>
+</div>
+<span class="font-code-tabular text-xs text-outline">QUEUE_LOCKED</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Statutory Synthesis &amp; BibTeX Compiler</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+              Final consolidation of verified citations, conflicting jurisprudence, and immutable archival docket indexation.
+            </p>
+<div class="grid grid-cols-3 gap-2 border-t border-outline-variant pt-3 font-code-tabular text-[11px] text-outline">
+<div>Output Format: <span class="text-on-surface">BibLaTeX</span></div>
+<div>Cross-ref: <span class="text-on-surface">Statutory</span></div>
+<div>Target: <span class="text-on-surface">/dossiers/09482</span></div>
+</div>
+</div>
+</div>
+<!-- DAG Control Console Bar -->
+<div class="p-4 border-t border-outline-variant bg-surface-container-low flex items-center justify-between">
+<span class="font-code-tabular text-xs text-outline">DAG Dispatcher: POSIX Signal Safe</span>
+<button class="px-3 py-1 bg-surface-container-lowest border border-outline-variant hover:border-outline text-on-surface font-label-md text-label-md uppercase">
+            Halt Pipeline
+          </button>
+</div>
+</section>
+<!-- ==================== RIGHT COLUMN: Telemetry Matrix & Chronological Ledger ==================== -->
+<div class="lg:col-span-7 flex flex-col">
+<!-- SECTION 2: Hardware and Epistemic Parity Index (Archival Ledger Table) -->
+<section class="border-b border-outline-variant bg-surface">
+<div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="memory">memory</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface italic">Hardware &amp; Epistemic Parity Index</h2>
+</div>
+<span class="font-code-tabular text-[11px] text-secondary font-medium uppercase">Isolated Metal Direct</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-code-tabular text-xs border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-lowest text-outline font-semibold uppercase tracking-wider text-[11px]">
+<th class="py-2.5 px-4 font-normal">Subsystem / Register</th>
+<th class="py-2.5 px-4 font-normal">Engine Implementation</th>
+<th class="py-2.5 px-4 font-normal text-right">Allocation / State</th>
+<th class="py-2.5 px-4 font-normal text-right">Verification Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant text-on-surface">
+<tr class="hover:bg-surface-container-low transition-none">
+<td class="py-2.5 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary inline-block"></span>
+                    POSIX Thread Pool
+                  </td>
+<td class="py-2.5 px-4 text-on-surface-variant">pthread_affinity_np (Apple M3 Core Bind)</td>
+<td class="py-2.5 px-4 text-right">8 Cores Active</td>
+<td class="py-2.5 px-4 text-right text-secondary">Locked (Affinity 0-7)</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-none">
+<td class="py-2.5 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary inline-block"></span>
+                    Unified VRAM Heap
+                  </td>
+<td class="py-2.5 px-4 text-on-surface-variant">Metal Buffer Managed Zero-Copy</td>
+<td class="py-2.5 px-4 text-right">11,418 MB / 16,384 MB</td>
+<td class="py-2.5 px-4 text-right text-secondary">Within Bounds (69.7%)</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-none">
+<td class="py-2.5 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary inline-block"></span>
+                    Local Vector DB
+                  </td>
+<td class="py-2.5 px-4 text-on-surface-variant">LanceDB Rust FFI (Disk-Backed Zero-Leak)</td>
+<td class="py-2.5 px-4 text-right">42,910 Vectors Ingested</td>
+<td class="py-2.5 px-4 text-right text-secondary">Cosine Cos-SIM &gt; 0.88</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-none">
+<td class="py-2.5 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary inline-block"></span>
+                    Embedding Engine
+                  </td>
+<td class="py-2.5 px-4 text-on-surface-variant">nomic-embed-text-v1.5 (Local Quant)</td>
+<td class="py-2.5 px-4 text-right">768-Dim Dense FP16</td>
+<td class="py-2.5 px-4 text-right text-secondary">Deterministic Parity</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-none">
+<td class="py-2.5 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary inline-block"></span>
+                    AF_INET Socket Trap
+                  </td>
+<td class="py-2.5 px-4 text-on-surface-variant">eBPF Hard Outbound Disconnect</td>
+<td class="py-2.5 px-4 text-right">0 Bytes Emitted</td>
+<td class="py-2.5 px-4 text-right text-secondary">AIRGAP CERTIFIED</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- SECTION 3: Live Chronological Execution Ledger -->
+<section class="flex-1 bg-surface-container-lowest flex flex-col">
+<div class="px-6 py-3 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="terminal">terminal</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface italic">Chronological Execution Ledger</h2>
+</div>
+<div class="flex items-center gap-3 font-code-tabular text-xs">
+<span class="text-outline">POLL: 100ms</span>
+<span class="flex items-center gap-1 text-secondary">
+<span class="w-1.5 h-1.5 bg-secondary"></span>
+                STREAMING
+              </span>
+</div>
+</div>
+<!-- Terminal Event Trail (Unembellished, Flat Monospace Output) -->
+<div class="p-6 font-code-tabular text-xs space-y-2 overflow-y-auto max-h-[380px] bg-surface-container-lowest">
+<div class="text-outline">[14:02:18.004] <span class="text-on-surface font-semibold">[INIT]</span> Swarm controller initialized. 8 POSIX worker threads locked to cluster M3-MAX.</div>
+<div class="text-outline">[14:02:18.112] <span class="text-secondary font-semibold">[AIRGAP]</span> eBPF socket interceptor armed. Outbound egress blocked on port all. Byte counter = 0.</div>
+<div class="text-outline">[14:02:19.340] <span class="text-on-surface font-semibold">[LANCE_DB]</span> Table `dossier_09482_vectors` mounted. Index type: IVF_PQ_768. Local path: /var/archival/lance.</div>
+<div class="text-outline">[14:02:19.892] <span class="text-on-surface font-semibold">[INGEST]</span> Ingestion finished: 42 statutory corpora indexed across 1,842 document shards.</div>
+<div class="text-outline">[14:02:20.104] <span class="text-on-surface font-semibold">[NLI_BEGIN]</span> Spawning cross-attention batch for 38 hypothesis-premise pairs against model weights.</div>
+<div class="text-outline">[14:02:20.450] <span class="text-on-surface-variant font-medium">[PTHREAD_02]</span> Cosine distance query: target="statutory precedence" &lt;=&gt; corpus_vector#041. CosDist = 0.1142.</div>
+<div class="text-outline">[14:02:21.018] <span class="text-primary font-semibold">[CONTRADICTION]</span> Pair #04 flagged. Premise P[08] ("Strict Liability applies") conflicts with Ruling R[12] ("Fault Required"). Divergence delta: 0.8912δ.</div>
+<div class="text-outline">[14:02:21.289] <span class="text-primary font-semibold">[CONTRADICTION]</span> Pair #11 flagged. Jurisdictional overlap contested in 2nd Cir. vs 9th Cir. precedent. Tensor confidence: 0.941.</div>
+<div class="text-outline">[14:02:21.902] <span class="text-on-surface-variant font-medium">[PTHREAD_05]</span> LanceDB Vector scan: 1,024 batch items normalized in 4.2ms. VRAM allocation steady at 11,418 MB.</div>
+<div class="text-outline">[14:02:22.140] <span class="text-secondary font-semibold">[ENTAILMENT]</span> Pair #19 verified. Premise P[14] strictly entailed by statutory codex § 18-U.S.C.-1001. Contradiction delta: 0.001δ.</div>
+<div class="text-outline">[14:02:22.481] <span class="text-primary font-semibold">[CONTRADICTION]</span> Pair #23 flagged. Timeline collision: Deposition timestamp precedes verifiable server log by 4.2 hours. Friction class: CRITICAL.</div>
+<div class="text-outline">[14:02:22.890] <span class="text-on-surface-variant font-medium">[PTHREAD_01]</span> Evaluating Pair #28 / 38: "Exculpatory evidence disclosure under Brady doctrine." Computing cross-entropy...</div>
+<div class="text-primary font-semibold animate-pulse">[14:02:23.002] &gt;&gt; Hostile NLI pass ongoing. Processing tensor batch 27/38...</div>
+</div>
+<!-- Bottom Ledger Control Strip -->
+<div class="p-3 border-t border-outline-variant bg-surface flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-4 text-xs font-code-tabular text-outline">
+<span>Lines: 1,489</span>
+<span>Buffer: Ring-Buffer 64KB</span>
+<span>Filter: All Events</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant hover:border-outline text-on-surface text-xs font-code-tabular">
+                Clear Buffer
+              </button>
+<button class="px-2.5 py-1 bg-surface-container-lowest border border-outline-variant hover:border-outline text-on-surface text-xs font-code-tabular">
+                Snapshot Log
+              </button>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- ==================== BOTTOM SYSTEM ANCHOR / PROVENANCE RECORD ==================== -->
+<footer class="p-6 bg-surface-container-lowest border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface italic">ResearchForge Sovereign Runtime Docket</div>
+<div class="font-code-tabular text-xs text-outline mt-0.5">
+            Cryptographic Node ID: <span class="text-on-surface-variant">rf-node-mac-m3-local-01</span> // Certificate Hash: <span class="text-on-surface-variant">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+</div>
+</div>
+<div class="flex items-center gap-4 font-code-tabular text-xs text-outline">
+<span class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="shield">shield</span>
+            Airgap Impregnable
+          </span>
+<span class="border-l border-outline-variant pl-4">Local Clock: 14:02:23 UTC</span>
+<span class="border-l border-outline-variant pl-4">Latency: 14ms (Bus Native)</span>
+</div>
+</div>
+</footer>
+</main>
+<script>
+    // Lightweight simulated archival log updates (Pure planographic / terminal feeling)
+    document.addEventListener('DOMContentLoaded', () => {
+      const logsContainer = document.querySelector('.overflow-y-auto');
+      const messages = [
+        { level: 'PTHREAD_03', text: 'LanceDB cosine query for premise cluster #29 completed in 1.1ms.', color: 'text-on-surface-variant font-medium' },
+        { level: 'ENTAILMENT', text: 'Pair #30 verified. Mutual entailment score 0.982. No statutory friction.', color: 'text-secondary font-semibold' },
+        { level: 'NLI_TENSOR', text: 'Cross-attention pass on batch 31/38 completed. Zero GPU thermal throttle.', color: 'text-on-surface font-semibold' },
+        { level: 'CONTRADICTION', text: 'Pair #32 flagged. Conflicting assertions regarding treaty ratification dates.', color: 'text-primary font-semibold' }
+      ];
+
+      let msgIndex = 0;
+      setInterval(() => {
+        if (msgIndex < messages.length && logsContainer) {
+          const now = new Date();
+          const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+          const msg = messages[msgIndex];
+          const div = document.createElement('div');
+          div.className = 'text-outline text-xs font-code-tabular';
+          div.innerHTML = `[${timeStr}] <span class="${msg.color}">[${msg.level}]</span> ${msg.text}`;
+          logsContainer.appendChild(div);
+          logsContainer.scrollTop = logsContainer.scrollHeight;
+          msgIndex++;
+        }
+      }, 4000);
+    });
+  </script>
+</body></html>
