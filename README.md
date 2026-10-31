@@ -259,3 +259,4 @@ pip install -r backend/requirements.txt
 
 This project is for local/personal use. All AI inference is performed on-device via Ollama — no data is sent to external APIs.
 # MultiModel
+# MultiModel
